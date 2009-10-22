@@ -173,8 +173,8 @@ PostScript::Report::Role::Component - Something that can be drawn
 =head1 VERSION
 
 This document describes version 0.01 of
-PostScript::Report::Role::Component, released October 20, 2009
-as part of PostScript-Report version 0.01.
+PostScript::Report::Role::Component, released October 22, 2009
+as part of PostScript-Report version 0.02.
 
 =head1 DESCRIPTION
 

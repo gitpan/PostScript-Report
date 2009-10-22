@@ -17,7 +17,7 @@ package PostScript::Report;
 # ABSTRACT: Produce formatted reports in PostScript
 #---------------------------------------------------------------------
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 use 5.008;
 use Moose;
@@ -291,6 +291,13 @@ has ps_functions => (
 );
 
 
+has ps_parameters => (
+  is       => 'ro',
+  isa      => HashRef,
+  default  => sub { {} },
+);
+
+
 has paper_size => (
   is      => 'ro',
   isa     => Str,
@@ -351,6 +358,7 @@ sub _build_ps
     file_ext    => '',
     font_suffix => '-iso',
     landscape   => $self->landscape,
+    %{ $self->ps_parameters },
   );
 } # end _build_ps
 
@@ -380,13 +388,24 @@ sub get_value
 {
   my ($self, $value) = @_;
 
-  if (ref $value) {
-    $value->get_value($self);
-  } elsif ($value =~ /^\d+$/) {
-    $self->_rows->[ $self->_current_row ][ $value ];
-  } else {
-    $self->_data->{$value};
-  }
+  my $result = do {
+    if (ref $value) {
+      $value->get_value($self);
+    } elsif ($value =~ /^\d+$/) {
+      my $row = $self->_rows->[ $self->_current_row ];
+      warn sprintf("Row %d has no column %d (only 0 through %d)\n",
+                   $self->_current_row, $value, $#$row)
+          unless not $row or $value <= $#$row;
+      $row->[$value];
+    } else {
+      my $dataHash = $self->_data;
+      warn "$value is not a key in this report's \%data\n"
+          unless exists $dataHash->{$value};
+      $dataHash->{$value};
+    }
+  };
+
+  defined($result) ? $result : '';
 } # end get_value
 
 #---------------------------------------------------------------------
@@ -698,9 +717,9 @@ PostScript::Report - Produce formatted reports in PostScript
 
 =head1 VERSION
 
-This document describes version 0.01 of
-PostScript::Report, released October 20, 2009
-as part of PostScript-Report version 0.01.
+This document describes version 0.02 of
+PostScript::Report, released October 22, 2009
+as part of PostScript-Report version 0.02.
 
 =head1 SYNOPSIS
 
@@ -716,7 +735,7 @@ as part of PostScript-Report version 0.01.
 
 PostScript::Report helps you generate nicely formatted reports using
 PostScript.  You do not need any knowledge of PostScript to use this
-package (unless you want to create new field types).
+package (unless you want to create new Component types).
 
 You probably won't create a PostScript::Report object directly using
 C<new>.  Instead, you'll pass a report description to the L</"build">
@@ -800,6 +819,15 @@ This the left margin (default 72, or one inch).
 =head3 paper_size
 
 This the paper size (default C<Letter>).  See L<PostScript::File/paper>.
+
+
+=head3 ps_parameters
+
+This is a hashref of additional parameters to pass to
+PostScript::File's constructor.  These values will override the
+parameters that PostScript::Report generates itself (but you should
+reserve this for things that can't be controlled through
+other PostScript::Report attributes).
 
 
 =head3 right_margin
@@ -916,6 +944,10 @@ component's C<init> method may add an entry here.
 This is the usual method for constructing a PostScript::Report.  It
 passes the C<%description> to L<PostScript::Report::Builder>.
 
+If C<%description> does not define C<report_class>, then it is set to
+the class on which you called C<build>.  (This matters only if you
+have subclassed PostScript::Report.)
+
 
 
 =head2 run
@@ -923,7 +955,7 @@ passes the C<%description> to L<PostScript::Report::Builder>.
   $rpt->run(\%data, \@rows)
 
 This method runs the report on the specified data.  C<%data> is a hash
-containing values for the report.  C<@rows> is an arrary of arrayrefs
+containing values for the report.  C<@rows> is an array of arrayrefs
 of strings.  The L</detail> section is printed once for each arrayref.
 
 After running the report, you should call L</output> to store the
@@ -982,17 +1014,22 @@ things:
 =item a non-negative integer
 
 A 0-based column in the current row (normally used only in the
-C<detail> section).
+C<detail> section).  A warning will be issued if the current row does
+not have that many columns.
 
 =item a string
 
-An entry in the C<%data> passed to L</run>.
+An entry in the C<%data> passed to L</run>.  A warning will be issued
+if the key does not exist in C<%data>.
 
 =item an object
 
 This returns C<< $value_source->get_value($rpt) >>.
 
 =back
+
+If the result would be C<undef>, the empty string is returned instead.
+(No warning is issued for this.)
 
 
 =head2 height

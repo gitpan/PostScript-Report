@@ -17,7 +17,7 @@ package PostScript::Report::Builder;
 # ABSTRACT: Build a PostScript::Report object
 #---------------------------------------------------------------------
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 use 5.008;
 use Moose;
@@ -79,6 +79,7 @@ our @constructor_args = qw(
   padding_bottom
   padding_side
   paper_size
+  ps_parameters
   right_margin
   row_height
   title
@@ -217,13 +218,13 @@ sub build_section
                  ? 'HBox' : 'VBox');
 
   # Recursively build the box:
-  return $self->build_box($desc, $boxType);
+  return $self->build_box($desc, $boxType, $self->default_field_type);
 } # end build_section
 
 #---------------------------------------------------------------------
 sub build_box
 {
-  my ($self, $desc, $boxType) = @_;
+  my ($self, $desc, $boxType, $defaultClass) = @_;
 
   die "Empty box is not allowed" unless @$desc;
 
@@ -234,17 +235,16 @@ sub build_box
   if (not ref $desc->[0]) {
     $boxType  = $desc->[0];
     %param = %{ $desc->[1] };
+    $defaultClass = delete $param{_default} if exists $param{_default};
     $self->_fixup_parms(\%param);
     $start = 2;
   }
 
-  # Construct the children:
-  my $defaultClass = $self->default_field_type;
-
   my @children = map {
     ref $_ eq 'HASH'
         ? $self->build_object($_, $defaultClass)
-        : $self->build_box($_, ($boxType eq 'HBox' ? 'VBox' : 'HBox'))
+        : $self->build_box($_, ($boxType eq 'HBox' ? 'VBox' : 'HBox'),
+                           $defaultClass)
   } @$desc[$start .. $#$desc];
 
   # Construct the box:
@@ -287,14 +287,17 @@ sub _fixup_parms
   while (my ($key, $val) = each %$parms) {
     if ($key =~ /(?:^|_)font$/) {
       $parms->{$key} = $self->get_font($val);
-    } elsif (ref $val) {
-      if ($key eq 'value') {
-        $parms->{$key} = $self->build_object($val, undef,
-                                           'PostScript::Report::Value::');
+    } elsif ($key eq 'value' and ref $val) {
+      if (ref $val eq 'SCALAR') {
+        $self->require_class('PostScript::Report::Value::Constant');
+        $parms->{$key} = PostScript::Report::Value::Constant->new(
+          value => $$val
+        );
       } else {
-        $parms->{$key} = $self->build_object($val);
+        $parms->{$key} = $self->build_object($val, undef,
+                                             'PostScript::Report::Value::');
       }
-    } # end else ref $val
+    } # end elsif key 'value' and ref $val
   } # end while each ($key, $val) in %$parms
 } # end _fixup_parms
 
@@ -326,9 +329,9 @@ PostScript::Report::Builder - Build a PostScript::Report object
 
 =head1 VERSION
 
-This document describes version 0.01 of
-PostScript::Report::Builder, released October 20, 2009
-as part of PostScript-Report version 0.01.
+This document describes version 0.02 of
+PostScript::Report::Builder, released October 22, 2009
+as part of PostScript-Report version 0.02.
 
 =head1 SYNOPSIS
 
@@ -403,11 +406,25 @@ HBox, it becomes a VBox.  An arrayref in a VBox becomes an HBox.
 
 You can override the box type (or pass parameters to its constructor),
 by making the first entry in the arrayref a string (the container
-type) and the second entry a hashref to pass to its constructor.
+type) and the second entry a hashref to pass to its constructor.  If
+that hashref contains a C<_default> key, its value becomes the default
+component class inside this container.
 
 The hashref that represents a Component is simply passed to its
 constructor, with one exception.  If the hash contains the C<_class>
 key, that value is removed and used as the class name.
+
+=head3 Constant Values
+
+As a special case, you can pass a scalar reference as the C<value> for
+a Component.  This creates a
+L<constant value|PostScript::Report::Value::Constant>.  That is,
+
+  value => \'Label:',
+
+is equivalent to
+
+  value => { _class => 'Constant',  value => 'Label:' },
 
 =head3 A Note on Class Names
 
@@ -501,6 +518,9 @@ It defaults to L<Field|PostScript::Report::Field>.
 
 This is the default component class used when building the report
 sections.  It defaults to L<Field|PostScript::Report::Field>.
+
+You can temporarily override this by specifying the C<_default> key as
+a container's parameter.
 
 
 =head2 report_class

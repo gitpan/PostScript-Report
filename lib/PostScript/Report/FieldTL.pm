@@ -17,7 +17,7 @@ package PostScript::Report::FieldTL;
 # ABSTRACT: A field with a label in the top left corner
 #---------------------------------------------------------------------
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 use Moose;
 use MooseX::Types::Moose qw(Bool Int Num Str);
@@ -149,8 +149,8 @@ sub draw
   } # end if multiline
 
   $rpt->ps->add_to_page( sprintf(
-    "%s %s %s %s /%s-%s %d %s %s %s %s %d %d %d %d %s %s %s db%s\n",
-    join(' ', map { pstr($_) } reverse @lines),
+    "%s\n%s %s %s /%s-%s %d %s\n%s\n%s %s %d %d %d %d %s %s %s db%s\n",
+    join("\n", map { pstr($_) } reverse @lines),
     $font->size,
     $self->padding_text_side,
     $font->size + $self->padding_label_top+$labelSize + $self->padding_text_top,
@@ -180,9 +180,9 @@ PostScript::Report::FieldTL - A field with a label in the top left corner
 
 =head1 VERSION
 
-This document describes version 0.01 of
-PostScript::Report::FieldTL, released October 20, 2009
-as part of PostScript-Report version 0.01.
+This document describes version 0.02 of
+PostScript::Report::FieldTL, released October 22, 2009
+as part of PostScript-Report version 0.02.
 
 =head1 DESCRIPTION
 
