@@ -17,7 +17,7 @@ package PostScript::Report::Image;
 # ABSTRACT: Include an EPS file
 #---------------------------------------------------------------------
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 use Moose;
 use MooseX::Types::Moose qw(Bool Int Num Str);
@@ -131,7 +131,7 @@ after init => sub {
   translate
   dup scale
   /Image-dict_stack countdictstack def
-  /Image-ops_count count 1 sub def
+  count /Image-ops_count exch def
   userdict begin
   /showpage {} def
 } bind def
@@ -204,14 +204,18 @@ PostScript::Report::Image - Include an EPS file
 
 =head1 VERSION
 
-This document describes version 0.02 of
-PostScript::Report::Image, released October 22, 2009
-as part of PostScript-Report version 0.02.
+This document describes version 0.03 of
+PostScript::Report::Image, released October 28, 2009
+as part of PostScript-Report version 0.03.
 
 =head1 DESCRIPTION
 
 This L<Component|PostScript::Report::Role::Component> allows you to
-include an EPS file in your report.
+include an EPS file in your report.  Most vector-based drawing
+programs can save in EPS format.  You can also convert bitmap images
+to EPS using a program like ImageMagick (L<http://www.imagemagick.org>),
+but vector-based formats will generally give you better quality and
+smaller files.
 
 =head1 ATTRIBUTES
 

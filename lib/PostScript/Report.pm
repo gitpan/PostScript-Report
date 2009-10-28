@@ -17,13 +17,13 @@ package PostScript::Report;
 # ABSTRACT: Produce formatted reports in PostScript
 #---------------------------------------------------------------------
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 use 5.008;
 use Moose;
-use MooseX::Types::Moose qw(ArrayRef Bool HashRef Int Num Str);
+use MooseX::Types::Moose qw(ArrayRef Bool CodeRef HashRef Int Num Str);
 use PostScript::Report::Types ':all';
-use PostScript::File 'pstr';
+use PostScript::File 1.04 'pstr';
 
 use PostScript::Report::Font ();
 use List::Util 'min';
@@ -72,6 +72,12 @@ has page_footer => (
 has report_footer => (
   is  => 'rw',
   isa => Component,
+);
+
+
+has detail_background => (
+  is      => 'ro',
+  isa     => CodeRef,
 );
 
 
@@ -130,6 +136,33 @@ sub _init
 
 /db0 { 5 { pop } repeat } bind def
 /db1 { gsave setlinewidth drawbox grestore } bind def
+
+%---------------------------------------------------------------------
+% Set the color:  RGBarray|BWnumber setColor
+
+/setColor
+{
+  dup type (arraytype) eq {
+    % We have an array, so it's RGB:
+    aload pop
+    setrgbcolor
+  }{
+    % Otherwise, it must be a gray level:
+    setgray
+  } ifelse
+} bind def
+
+%---------------------------------------------------------------------
+% Fill a box with color:  Left Top Right Bottom Color fillbox
+
+/fillbox
+{
+  gsave
+  setColor
+  boxpath
+  fill
+  grestore
+} bind def
 
 %---------------------------------------------------------------------
 % Print text centered at a point:  X Y STRING showcenter
@@ -280,6 +313,7 @@ has ps => (
   writer  => '_set_ps',
   clearer => 'clear',
   handles => ['output'],
+  init_arg=> undef,
 );
 
 
@@ -555,6 +589,8 @@ sub run
 
   my $ps = $self->ps;
 
+  $ps->add_comment('PageOrder: Ascend');
+
   my ($x, $yBot, $yTop) = ($ps->get_bounding_box)[0,1,3];
 
   my $report_header = $self->report_header;
@@ -586,7 +622,9 @@ sub run
     } # end if $page_header
 
     if ($detail) {
+      my $rowOnPage = 0;
       while ($y >= $minY) {
+        $self->_stripe_detail($rowOnPage++);
         $detail->draw($x, $y, $self);
         $y -= $detail->height;
         if ($self->_current_row( $self->_current_row + 1 ) > $#$rows) {
@@ -621,6 +659,18 @@ sub run
 
   $self;                        # Allow for method chaining
 } # end run
+
+#---------------------------------------------------------------------
+sub _stripe_detail
+{
+  my ($self, $rowOnPage) = @_;
+
+  my $code = $self->detail_background or return;
+
+  my $color = $code->($self->_current_row, $rowOnPage);
+
+  $self->detail->_set_background($color) if defined $color;
+} # end _stripe_detail
 
 #---------------------------------------------------------------------
 sub _generate_font_list
@@ -699,6 +749,13 @@ sub _dump_attr
     }
   } # end if blessed $val
 
+  # Convert RGB colors from array back to hex triplet:
+  if (ref $val and $attr->has_type_constraint and
+      $attr->type_constraint->name eq 'PostScript::Report::Types::Color') {
+    $val = join('', '#', map { sprintf '%02X', 255 * $_ + 0.5 } @$val);
+  } # end if RGB color
+
+  # Print the attribute and value:
   printf "%s%-14s: %s\n", '  ' x $level, $attr->name, $val;
 } # end _dump_attr
 
@@ -717,9 +774,9 @@ PostScript::Report - Produce formatted reports in PostScript
 
 =head1 VERSION
 
-This document describes version 0.02 of
-PostScript::Report, released October 22, 2009
-as part of PostScript-Report version 0.02.
+This document describes version 0.03 of
+PostScript::Report, released October 28, 2009
+as part of PostScript-Report version 0.03.
 
 =head1 SYNOPSIS
 
@@ -795,6 +852,15 @@ formatting of the report as a whole.  All dimensions are in points.
 =head3 bottom_margin
 
 This the bottom margin (default 72, or one inch).
+
+
+=head3 detail_background
+
+This is a code reference that is called before the detail section is
+drawn.  It receives two parameters: the row number and the row number
+on this page (both 0-based).  It returns the background color for the
+detail section, or C<undef> (which means to use the same color as last
+time).
 
 
 =head3 footer_align
@@ -886,7 +952,9 @@ It's used mainly for component borders.
 =head3 padding_bottom
 
 This indicates the distance between the bottom of a component and the
-baseline of the text inside it (4 by default).
+baseline of the text inside it (4 by default).  If this is too small,
+then the descenders (on letters like "p" and "y") will be cut off.
+(The exact minimum necessary depends on the selected font and size.)
 
 
 =head3 padding_side
@@ -1083,7 +1151,8 @@ None reported.
 
 =head1 BUGS AND LIMITATIONS
 
-No bugs have been reported.
+PostScript::Report does not support characters outside of Latin-1.
+Unfortunately, supporting Unicode in PostScript is non-trivial.
 
 =head1 AUTHOR
 

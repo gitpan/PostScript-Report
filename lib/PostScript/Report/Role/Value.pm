@@ -49,8 +49,8 @@ PostScript::Report::Role::Value - Something that returns a field value
 =head1 VERSION
 
 This document describes version 0.01 of
-PostScript::Report::Role::Value, released October 22, 2009
-as part of PostScript-Report version 0.02.
+PostScript::Report::Role::Value, released October 28, 2009
+as part of PostScript-Report version 0.03.
 
 =head1 DESCRIPTION
 

@@ -17,7 +17,7 @@ package PostScript::Report::Role::Container;
 # ABSTRACT: A component that has components
 #---------------------------------------------------------------------
 
-our $VERSION = '0.01';
+our $VERSION = '0.03';
 
 use Moose::Role;
 use MooseX::AttributeHelpers;
@@ -81,9 +81,9 @@ PostScript::Report::Role::Container - A component that has components
 
 =head1 VERSION
 
-This document describes version 0.01 of
-PostScript::Report::Role::Container, released October 22, 2009
-as part of PostScript-Report version 0.02.
+This document describes version 0.03 of
+PostScript::Report::Role::Container, released October 28, 2009
+as part of PostScript-Report version 0.03.
 
 =head1 DESCRIPTION
 
@@ -114,6 +114,7 @@ L<PostScript::Report::Role::Component/"Optional Attributes">.
 =head2 Other Attributes
 
 
+
 =head3 children
 
 This is an arrayref containing the child Components.
@@ -129,14 +130,30 @@ don't specify their own height.  L<PostScript::Report::VBox>.
 =head2 draw
 
 The Container role provides an C<after draw> modifier to draw a border
-around the container.  The container must still provide its own C<draw>
-method.
+around the container.  The container must still provide its own
+C<draw> method.
 
 
 =head2 init
 
 The Container role provides an C<after init> modifier that calls
 C<init> on each child Component.
+
+=head1 SEE ALSO
+
+The following containers are available by default:
+
+=over
+
+=item L<HBox|PostScript::Report::HBox>
+
+This draws its children in a horizontal row.
+
+=item L<VBox|PostScript::Report::VBox>
+
+This draws its children in a vertical column.
+
+=back
 
 =head1 INCOMPATIBILITIES
 

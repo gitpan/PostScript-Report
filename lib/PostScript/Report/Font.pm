@@ -116,8 +116,8 @@ PostScript::Report::Font - Represents a PostScript font
 =head1 VERSION
 
 This document describes version 0.01 of
-PostScript::Report::Font, released October 22, 2009
-as part of PostScript-Report version 0.02.
+PostScript::Report::Font, released October 28, 2009
+as part of PostScript-Report version 0.03.
 
 =head1 DESCRIPTION
 

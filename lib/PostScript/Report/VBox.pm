@@ -108,8 +108,8 @@ PostScript::Report::VBox - Hold components in a vertical column
 =head1 VERSION
 
 This document describes version 0.01 of
-PostScript::Report::VBox, released October 22, 2009
-as part of PostScript-Report version 0.02.
+PostScript::Report::VBox, released October 28, 2009
+as part of PostScript-Report version 0.03.
 
 =head1 DESCRIPTION
 

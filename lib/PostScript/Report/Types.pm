@@ -17,13 +17,15 @@ package PostScript::Report::Types;
 # ABSTRACT: type library for PostScript::Report
 #---------------------------------------------------------------------
 
-our $VERSION = '0.01';
+our $VERSION = '0.03';
+
+use Carp 'confess';
 
 use MooseX::Types -declare => [qw(
-  BorderStyle Component Container FontObj FontMetrics HAlign
-  Parent Report RptValue VAlign
+  BorderStyle BWColor Color Component Container FontObj FontMetrics HAlign
+  Parent Report RGBColor RGBColorHex RptValue VAlign
 )];
-use MooseX::Types::Moose qw(Str);
+use MooseX::Types::Moose qw(ArrayRef Num Str);
 
 enum(BorderStyle, qw(0 1));
 
@@ -52,6 +54,39 @@ subtype Parent,
 
 enum(VAlign, qw(bottom top));
 
+#---------------------------------------------------------------------
+subtype BWColor,
+  as Num,
+  where { $_ >= 0 and $_ <= 1 };
+
+subtype RGBColor,
+  as ArrayRef[BWColor],
+  where { @$_ == 3 };
+
+subtype RGBColorHex,
+  as Str,
+  # Must have a multiple of 3 hex digits after initial '#':
+  where { /^#((?:[0-9a-f]{3})+)$/i };
+
+coerce RGBColor,
+  from RGBColorHex,
+  via {
+    my $color = substr($_, 1);
+
+    my $digits = int(length($color) / 3); # Number of digits per color
+    my $max    = hex('F' x $digits);      # Max intensity per color
+
+    [ map {
+        my $n = sprintf('%.3f',
+                        hex(substr($color, $_ * $digits, $digits)) / $max);
+        $n =~ s/\.?0+$//;
+        $n
+      } 0 .. 2 ];
+  };
+
+subtype Color,
+  as BWColor|RGBColor;
+
 1;
 
 __END__
@@ -62,9 +97,9 @@ PostScript::Report::Types - type library for PostScript::Report
 
 =head1 VERSION
 
-This document describes version 0.01 of
-PostScript::Report::Types, released October 22, 2009
-as part of PostScript-Report version 0.02.
+This document describes version 0.03 of
+PostScript::Report::Types, released October 28, 2009
+as part of PostScript-Report version 0.03.
 
 =head1 DESCRIPTION
 
@@ -75,6 +110,15 @@ These are the custom types used by L<PostScript::Report>.
 =head2 BorderStyle
 
 A valid border style (C<0> or C<1>)
+
+=head2 Color
+
+This is a number in the range 0 to 1 (where 0 is black and 1 is
+white), or an arrayref of three numbers C<[ Red, Green, Blue ]> where
+each number is in the range 0 to 1.
+
+In addition, you can specify an RGB color in the HTML hex triplet form
+prefixed by C<#> (like C<#FFFF00> or C<#FF0> for yellow).
 
 =head2 Component
 
