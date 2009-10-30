@@ -103,8 +103,8 @@ PostScript::Report::Field - A simple field with no label
 =head1 VERSION
 
 This document describes version 0.02 of
-PostScript::Report::Field, released October 28, 2009
-as part of PostScript-Report version 0.03.
+PostScript::Report::Field, released October 29, 2009
+as part of PostScript-Report version 0.04.
 
 =head1 DESCRIPTION
 

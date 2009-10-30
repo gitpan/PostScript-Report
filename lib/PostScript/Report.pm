@@ -17,16 +17,17 @@ package PostScript::Report;
 # ABSTRACT: Produce formatted reports in PostScript
 #---------------------------------------------------------------------
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 use 5.008;
 use Moose;
 use MooseX::Types::Moose qw(ArrayRef Bool CodeRef HashRef Int Num Str);
 use PostScript::Report::Types ':all';
-use PostScript::File 1.04 'pstr';
+use PostScript::File 1.05 'pstr'; # Need cp1252 support
 
 use PostScript::Report::Font ();
 use List::Util 'min';
+use Scalar::Util 'reftype';
 
 use namespace::autoclean;
 #---------------------------------------------------------------------
@@ -136,6 +137,43 @@ sub _init
 
 /db0 { 5 { pop } repeat } bind def
 /db1 { gsave setlinewidth drawbox grestore } bind def
+
+% Easy access to the corners of a box:
+% 3 3 1 1
+% L T R B
+
+/boxLT { 3 index  3 index } bind def
+/boxRT { 1 index  3 index } bind def
+/boxLB { 3 index  1 index } bind def
+/boxRB { 2 copy           } bind def
+
+% Start drawing a border:  L T R B LW bdrB
+/bdrB { gsave setlinewidth } bind def
+
+% Finish drawing a border:  L T R B X Y bdrE
+/bdrE {
+  lineto stroke			% Finish the line and stroke it
+  pop pop pop pop		% Remove L T R B
+  grestore
+} bind def
+
+/dbT { bdrB  boxLT moveto  boxRT bdrE } bind def
+/dbB { bdrB  boxLB moveto  boxRB bdrE } bind def
+/dbL { bdrB  boxLT moveto  boxLB bdrE } bind def
+/dbR { bdrB  boxRT moveto  boxRB bdrE } bind def
+
+/dbTB { 5 copy  dbT dbB } bind def
+/dbLR { 5 copy  dbL dbR } bind def
+
+/dbTL { bdrB  boxRT moveto  boxLT lineto  boxLB bdrE } bind def
+/dbTR { bdrB  boxLT moveto  boxRT lineto  boxRB bdrE } bind def
+/dbBL { bdrB  boxRB moveto  boxLB lineto  boxLT bdrE } bind def
+/dbBR { bdrB  boxLB moveto  boxRB lineto  boxRT bdrE } bind def
+
+/dbTLR { bdrB  boxLB moveto  boxLT lineto  boxRT lineto  boxRB bdrE } bind def
+/dbBLR { bdrB  boxLT moveto  boxLB lineto  boxRB lineto  boxRT bdrE } bind def
+/dbTBL { bdrB  boxRT moveto  boxLT lineto  boxLB lineto  boxRB bdrE } bind def
+/dbTBR { bdrB  boxLT moveto  boxRT lineto  boxRB lineto  boxLB bdrE } bind def
 
 %---------------------------------------------------------------------
 % Set the color:  RGBarray|BWnumber setColor
@@ -250,6 +288,7 @@ has align => (
 has border => (
   is       => 'ro',
   isa      => BorderStyle,
+  coerce   => 1,
   default  => 1,
 );
 
@@ -388,7 +427,8 @@ sub _build_ps
     left        => $self->left_margin,
     right       => $self->right_margin,
     title       => pstr($self->title),
-    reencode    => 'ISOLatin1Encoding',
+    order       => 'Ascend',
+    reencode    => 'cp1252',
     file_ext    => '',
     font_suffix => '-iso',
     landscape   => $self->landscape,
@@ -579,8 +619,14 @@ sub run
 {
   my ($self, $data, $rows) = @_;
 
-  $self->_data($data);
-  $self->_rows($rows);
+  # Handle $rpt->run(\@rows):
+  if (not defined $rows and (reftype($data)||'') eq 'ARRAY') {
+    $rows = $data;
+    $data = {};
+  } # end if only one parameter, and it's an arrayref
+
+  $self->_data($data ||= {});
+  $self->_rows($rows ||= []);
   $self->_current_row(0);
 
   $self->_init;
@@ -588,8 +634,6 @@ sub run
   $self->_calculate_page_count;
 
   my $ps = $self->ps;
-
-  $ps->add_comment('PageOrder: Ascend');
 
   my ($x, $yBot, $yTop) = ($ps->get_bounding_box)[0,1,3];
 
@@ -680,8 +724,10 @@ sub _generate_font_list
   my %font;
 
   foreach my $font (values %{ $self->_fonts }) {
-    $font{$font->id} = sprintf("/%s /%s-iso findfont %s scalefont def\n",
-                               $font->id, $font->font, $font->size);
+    my $name = $font->font;
+    $name .= '-iso' unless $name eq 'Symbol';
+    $font{$font->id} = sprintf("/%s /%s findfont %s scalefont def\n",
+                               $font->id, $name, $font->size);
   } # end foreach $font
 
   $self->ps_functions->{__PACKAGE__.'-fonts'} = join('', sort values %font);
@@ -774,9 +820,9 @@ PostScript::Report - Produce formatted reports in PostScript
 
 =head1 VERSION
 
-This document describes version 0.03 of
-PostScript::Report, released October 28, 2009
-as part of PostScript-Report version 0.03.
+This document describes version 0.04 of
+PostScript::Report, released October 29, 2009
+as part of PostScript-Report version 0.04.
 
 =head1 SYNOPSIS
 
@@ -929,8 +975,15 @@ C<right> (default C<left>).
 =head3 border
 
 This is the default border style.  It may be 1 for a solid border (the
-default), or 0 for no border.  Additional border styles may be defined
-in the future.  The thickness of the border is controlled by L</line_width>.
+default), or 0 for no border.  In addition, you may specify any
+combination of the letters T, B, L, and R (meaning top, bottom, left,
+and right) to have a border only on the specified side(s).
+
+The thickness of the border is controlled by L</line_width>.
+
+(Note: The string you give will be converted into the canonical
+representation, which has the letters upper case and in the order
+TBLR.)
 
 
 =head3 font
@@ -947,6 +1000,7 @@ This is the default label font.  It defaults to Helvetica 6.
 
 This is the default line width (0.5 by default).
 It's used mainly for component borders.
+A line width of 0 means "as thin as possible".
 
 
 =head3 padding_bottom
@@ -1030,6 +1084,9 @@ After running the report, you should call L</output> to store the
 results.  C<run> returns C<$rpt>, so you can chain the method calls:
 
   $rpt->run(\%data, \@rows)->output($filename);
+
+If you omit either C<%data> or C<@rows> (or pass C<undef>), an empty
+hash or array will be substituted.
 
 
 =head2 output

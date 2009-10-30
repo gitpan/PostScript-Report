@@ -378,8 +378,8 @@ PostScript::Report::Builder - Build a PostScript::Report object
 =head1 VERSION
 
 This document describes version 0.03 of
-PostScript::Report::Builder, released October 28, 2009
-as part of PostScript-Report version 0.03.
+PostScript::Report::Builder, released October 29, 2009
+as part of PostScript-Report version 0.04.
 
 =head1 SYNOPSIS
 

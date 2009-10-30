@@ -16,9 +16,10 @@ requires:
   MooseX::AttributeHelpers: 0
   MooseX::AttributeTree: 0
   MooseX::Types: 0
-  PostScript::File: 1.04
+  PostScript::File: 1.05
+  Scalar::Util: 0
   String::RewritePrefix: 0
   namespace::autoclean: 0
 resources:
   repository: http://github.com/madsen/postscript-report
-version: 0.03
+version: 0.04

@@ -17,7 +17,7 @@ package PostScript::Report::Role::Component;
 # ABSTRACT: Something that can be drawn
 #---------------------------------------------------------------------
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 use Moose::Role;
 use MooseX::AttributeTree ();
@@ -71,6 +71,7 @@ has background => (
 has border => (
   is  => 'ro',
   isa => BorderStyle,
+  coerce => 1,
   @inherited,
 );
 
@@ -193,9 +194,9 @@ PostScript::Report::Role::Component - Something that can be drawn
 
 =head1 VERSION
 
-This document describes version 0.03 of
-PostScript::Report::Role::Component, released October 28, 2009
-as part of PostScript-Report version 0.03.
+This document describes version 0.04 of
+PostScript::Report::Role::Component, released October 29, 2009
+as part of PostScript-Report version 0.04.
 
 =head1 DESCRIPTION
 
@@ -242,8 +243,15 @@ Components, the effect is the same.
 =head3 border
 
 This is the border style.  It may be 1 for a solid border or 0 for no
-border.  Additional border styles may be defined in the future.  The
-thickness of the border is controlled by L</line_width>.
+border.  In addition, you may specify any combination of the letters
+T, B, L, and R (meaning top, bottom, left, and right) to have a border
+only on the specified side(s).
+
+The thickness of the border is controlled by L</line_width>.
+
+(Note: The string you give will be converted into the canonical
+representation, which has the letters upper case and in the order
+TBLR.)
 
 
 =head3 font
@@ -265,6 +273,7 @@ label.
 =head3 line_width
 
 This is the line width.  It's used mainly as the border width.
+A line width of 0 means "as thin as possible".
 
 
 =head3 width

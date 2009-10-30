@@ -17,7 +17,7 @@ package PostScript::Report::VBox;
 # ABSTRACT: Hold components in a vertical column
 #---------------------------------------------------------------------
 
-our $VERSION = '0.01';
+our $VERSION = '0.04';
 
 use Moose;
 use MooseX::Types::Moose qw(Bool Int Str);
@@ -67,7 +67,7 @@ after init => sub {
   unless (defined $height) {
 
     if (@$children == 1) {
-      my $height = $children->[0]->height;
+      $height = $children->[0]->height;
     } else {
       my $row_height = $self->row_height;
       $height = 0;
@@ -107,9 +107,9 @@ PostScript::Report::VBox - Hold components in a vertical column
 
 =head1 VERSION
 
-This document describes version 0.01 of
-PostScript::Report::VBox, released October 28, 2009
-as part of PostScript-Report version 0.03.
+This document describes version 0.04 of
+PostScript::Report::VBox, released October 29, 2009
+as part of PostScript-Report version 0.04.
 
 =head1 DESCRIPTION
 
