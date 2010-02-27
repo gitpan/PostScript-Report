@@ -17,13 +17,11 @@ package PostScript::Report::FieldTL;
 # ABSTRACT: A field with a label in the top left corner
 #---------------------------------------------------------------------
 
-our $VERSION = '0.03';
+our $VERSION = '0.05';
 
 use Moose;
 use MooseX::Types::Moose qw(Bool Int Num Str);
 use PostScript::Report::Types ':all';
-
-use PostScript::File 'pstr';
 
 use namespace::autoclean;
 
@@ -148,16 +146,17 @@ sub draw
                          @lines);
   } # end if multiline
 
-  $rpt->ps->add_to_page( sprintf(
+  my $ps = $rpt->ps;
+  $ps->add_to_page( sprintf(
     "%s\n%s %s %s /%s-%s %d %s\n%s\n%s %s %d %d %d %d %s %s %s db%s\n",
-    join("\n", map { pstr($_) } reverse @lines),
+    join("\n", map { $ps->pstr($_) } reverse @lines),
     $font->size,
     $self->padding_text_side,
     $font->size + $self->padding_label_top+$labelSize + $self->padding_text_top,
     $FieldTL, uc substr($self->align, 0, 1),
     scalar @lines,
     $font->id,
-    pstr($self->label),
+    $ps->pstr($self->label),
     $self->padding_label_side,
     $labelSize + $self->padding_label_top,
     $x, $y, $x + $self->width, $y - $self->height,
@@ -180,9 +179,9 @@ PostScript::Report::FieldTL - A field with a label in the top left corner
 
 =head1 VERSION
 
-This document describes version 0.03 of
-PostScript::Report::FieldTL, released October 29, 2009
-as part of PostScript-Report version 0.04.
+This document describes version 0.05 of
+PostScript::Report::FieldTL, released February 26, 2010
+as part of PostScript-Report version 0.05.
 
 =head1 DESCRIPTION
 
@@ -245,7 +244,7 @@ It wouldn't have happened without them.
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2009 by Christopher J. Madsen.
+This software is copyright (c) 2010 by Christopher J. Madsen.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

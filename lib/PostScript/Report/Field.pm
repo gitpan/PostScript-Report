@@ -17,13 +17,11 @@ package PostScript::Report::Field;
 # ABSTRACT: A simple field with no label
 #---------------------------------------------------------------------
 
-our $VERSION = '0.02';
+our $VERSION = '0.05';
 
 use Moose;
 use MooseX::Types::Moose qw(Bool Int Num Str);
 use PostScript::Report::Types ':all';
-
-use PostScript::File 'pstr';
 
 use namespace::autoclean;
 
@@ -78,10 +76,11 @@ sub draw
     else                  { $self->padding_side }
   };
 
-  $rpt->ps->add_to_page( sprintf(
+  my $ps = $rpt->ps;
+  $ps->add_to_page( sprintf(
     "%s %s\n%s\n%s %d %d %d %d %s-%s %s db%s\n",
     $x + $xOff, $y - $self->height + $self->padding_bottom,
-    pstr( $rpt->get_value($self->value) ),
+    $ps->pstr( $rpt->get_value($self->value) ),
     $self->font->id,
     $x, $y, $x + $self->width, $y - $self->height,
     $self->id, $align,
@@ -102,9 +101,9 @@ PostScript::Report::Field - A simple field with no label
 
 =head1 VERSION
 
-This document describes version 0.02 of
-PostScript::Report::Field, released October 29, 2009
-as part of PostScript-Report version 0.04.
+This document describes version 0.05 of
+PostScript::Report::Field, released February 26, 2010
+as part of PostScript-Report version 0.05.
 
 =head1 DESCRIPTION
 
@@ -151,7 +150,7 @@ It wouldn't have happened without them.
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2009 by Christopher J. Madsen.
+This software is copyright (c) 2010 by Christopher J. Madsen.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

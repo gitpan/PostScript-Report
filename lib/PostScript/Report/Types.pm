@@ -17,7 +17,7 @@ package PostScript::Report::Types;
 # ABSTRACT: type library for PostScript::Report
 #---------------------------------------------------------------------
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 use Carp 'confess';
 
@@ -59,7 +59,7 @@ subtype FontObj,
   as class_type('PostScript::Report::Font');
 
 subtype FontMetrics,
-  as class_type('Font::AFM');
+  as class_type('PostScript::File::Metrics');
 
 enum(HAlign, qw(center left right));
 
@@ -117,9 +117,9 @@ PostScript::Report::Types - type library for PostScript::Report
 
 =head1 VERSION
 
-This document describes version 0.04 of
-PostScript::Report::Types, released October 29, 2009
-as part of PostScript-Report version 0.04.
+This document describes version 0.05 of
+PostScript::Report::Types, released February 26, 2010
+as part of PostScript-Report version 0.05.
 
 =head1 DESCRIPTION
 
@@ -203,7 +203,7 @@ It wouldn't have happened without them.
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2009 by Christopher J. Madsen.
+This software is copyright (c) 2010 by Christopher J. Madsen.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

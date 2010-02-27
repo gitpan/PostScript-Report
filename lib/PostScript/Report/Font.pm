@@ -17,7 +17,7 @@ package PostScript::Report::Font;
 # ABSTRACT: Represents a PostScript font
 #---------------------------------------------------------------------
 
-our $VERSION = '0.01';
+our $VERSION = '0.05';
 
 use Moose;
 use MooseX::Types::Moose qw(Bool Int Num Str);
@@ -26,6 +26,7 @@ use PostScript::Report::Types ':all';
 has document => (
   is       => 'ro',
   isa      => Report,
+  weak_ref => 1,
   required => 1,
 );
 
@@ -53,54 +54,16 @@ has size => (
 has _metrics => (
   is       => 'ro',
   isa      => FontMetrics,
+  handles  => [qw(width wrap)],
   lazy     => 1,
-  default  => sub { my $self = shift;
-                    $self->document->_get_metrics($self->font); },
+  default  => sub {
+    my $self = shift;
+    $self->document->ps->get_metrics($self->font, $self->size);
+  },
 );
 
 
-sub width
-{
-  my $self = shift;
-
-  $self->_metrics->stringwidth(shift, $self->size);
-} # end width
-
-
-sub wrap
-{
-  my ($self, $width) = @_; # , $text
-
-  my $metrics = $self->_metrics;
-  my $size    = $self->size;
-
-  my @lines = '';
-
-  pos($_[2]) = 0;               # Make sure we start at the beginning
-  for ($_[2]) {
-    if (m/\G[ \t]*\n/gc) {
-      push @lines, '';
-    } else {
-      m/\G(\s*(?:[^-\s]+-*|\S+))/g or last;
-      my $word = $1;
-    check_word:
-      if ($metrics->stringwidth($lines[-1] . $word, $size) <= $width) {
-        $lines[-1] .= $word;
-      } elsif ($lines[-1] eq '') {
-        $lines[-1] = $word;
-        warn "$word is too wide for field width $width";
-      } else {
-        push @lines, '';
-        $word =~ s/^\s+//;
-        goto check_word;
-      }
-    } # end else not at LF
-
-    redo;                   # Only the "last" statement above can exit
-  } # end for $_[2] (the text to wrap)
-
-  @lines;
-} # end wrap
+# width & wrap are now handled by PostScript::File::Metrics
 
 #=====================================================================
 no Moose;
@@ -115,9 +78,9 @@ PostScript::Report::Font - Represents a PostScript font
 
 =head1 VERSION
 
-This document describes version 0.01 of
-PostScript::Report::Font, released October 29, 2009
-as part of PostScript-Report version 0.04.
+This document describes version 0.05 of
+PostScript::Report::Font, released February 26, 2010
+as part of PostScript-Report version 0.05.
 
 =head1 DESCRIPTION
 
@@ -195,7 +158,7 @@ It wouldn't have happened without them.
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2009 by Christopher J. Madsen.
+This software is copyright (c) 2010 by Christopher J. Madsen.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

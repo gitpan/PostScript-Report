@@ -17,10 +17,9 @@ package PostScript::Report::Role::Container;
 # ABSTRACT: A component that has components
 #---------------------------------------------------------------------
 
-our $VERSION = '0.03';
+our $VERSION = '0.05';
 
 use Moose::Role;
-use MooseX::AttributeHelpers;
 use MooseX::Types::Moose qw(ArrayRef Bool Int Num Str);
 use PostScript::Report::Types ':all';
 
@@ -30,12 +29,12 @@ my @inherited = (traits => [qw/TreeInherit/]);
 
 
 has children => (
-  metaclass => 'Collection::Array',
+  traits    => ['Array'],
   is        => 'ro',
   isa       => ArrayRef[Component],
   default   => sub { [] },
-  provides  => {
-    push => 'add_child',
+  handles  => {
+    add_child => 'push',
   },
 );
 
@@ -81,9 +80,9 @@ PostScript::Report::Role::Container - A component that has components
 
 =head1 VERSION
 
-This document describes version 0.03 of
-PostScript::Report::Role::Container, released October 29, 2009
-as part of PostScript-Report version 0.04.
+This document describes version 0.05 of
+PostScript::Report::Role::Container, released February 26, 2010
+as part of PostScript-Report version 0.05.
 
 =head1 DESCRIPTION
 
@@ -184,7 +183,7 @@ It wouldn't have happened without them.
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2009 by Christopher J. Madsen.
+This software is copyright (c) 2010 by Christopher J. Madsen.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

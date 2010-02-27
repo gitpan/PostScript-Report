@@ -26,15 +26,6 @@ BEGIN { $diff = eval "use Test::Differences; 1" }
 
 use PostScript::Report ();
 
-# I don't want reports from people who haven't gotten Font::AFM configured:
-BEGIN {
-  eval <<'END AFM Test';
-    use Font::AFM;
-    my $f = Font::AFM->new('Helvetica');
-END AFM Test
-  plan skip_all => "Can't find metrics for Helvetica" if $@;
-}
-
 my $generateResults = '';
 
 if (@ARGV and $ARGV[0] eq 'gen') {
@@ -300,7 +291,7 @@ my $desc = {
 my $data = {
   'custName'          => 'IMAGINARY AIRWAYS',
   'partNumReceived'   => '957X1427-3',
-  'serialNumReceived' => 'N/A',
+  'serialNumReceived' => '-45',
   'installedOn'       => '797',
   'location'          => 'A1',
   'workOrder'         => '68452-8',
@@ -360,13 +351,8 @@ checkResults(dumpReport($rpt), 'structure after build');
 
 $rpt->run($data, $rows);
 
-my $ps = $rpt->output;
-
-unless ($generateResults eq 'ps') {
-  # Remove PostScript::File generated code:
-  $ps =~ s/^%%BeginProcSet: PostScript_File.*?^%%EndProcSet\n//ms;
-  $ps =~ s/^%%BeginResource: Win1252_Encoded_Fonts.*?^%%EndResource\n//ms;
-} # end unless generating PostScript to look at
+# Use sanitized output (unless $generateResults eq 'ps'):
+my $ps = $rpt->ps->testable_output($generateResults eq 'ps');
 
 checkResults($ps, 'generated PostScript');
 
@@ -406,8 +392,8 @@ sub checkResults
 __DATA__
 align         : center
 border        : 1
-font          : Helvetica 9
-label_font    : Helvetica 6
+font          : Helvetica-iso 9
+label_font    : Helvetica-iso 6
 line_width    : 0.5
 padding_bottom: 4
 padding_side  : 3
@@ -416,7 +402,7 @@ row_height    : 22
 report_header:
   PostScript::Report::HBox:
     border        : 0
-    font          : Helvetica-Bold 9
+    font          : Helvetica-Bold-iso 9
     height        : 12
     padding_side  : 0
     children:
@@ -462,7 +448,7 @@ page_header:
             value         : location
             width         : 54
           PostScript::Report::FieldTL:
-            font          : Helvetica-Bold 9
+            font          : Helvetica-Bold-iso 9
             label         : Work Order#:
             value         : workOrder
             width         : 105
@@ -523,7 +509,7 @@ page_header:
                     value         : revisedDueDate
                     width         : 79
       PostScript::Report::HBox:
-        font          : Helvetica-Bold 9
+        font          : Helvetica-Bold-iso 9
         height        : 19
         padding_bottom: 6
         children:
@@ -582,7 +568,7 @@ page_footer:
     border        : 0
     children:
       PostScript::Report::Field:
-        font          : Helvetica-Bold 8
+        font          : Helvetica-Bold-iso 8
         value         : PostScript::Report::Value::Constant
           value         : The component identified above was repaired/overhauled/inspected IAW current federal aviation regulations and in respect to that work, was found airworthy for return to service.
       PostScript::Report::HBox:
@@ -605,13 +591,13 @@ page_footer:
             width         : 258
       PostScript::Report::HBox:
         border        : 1
-        font          : Helvetica 6
+        font          : Helvetica-iso 6
         height        : 14
         padding_side  : 0
         children:
           PostScript::Report::HBox:
             border        : 0
-            font          : Helvetica 8
+            font          : Helvetica-iso 8
             children:
               PostScript::Report::Field:
                 value         : PostScript::Report::Value::Constant
@@ -682,20 +668,19 @@ page_footer:
 ---
 %!PS-Adobe-3.0
 %%Orientation: Landscape
+%%DocumentNeededResources:
+%%+ font Courier-Bold Helvetica Helvetica-Bold
 %%DocumentSuppliedResources:
-%%+ procset PostScript__Report
-%%+ procset PostScript__Report-fonts
-%%+ procset PostScript__Report__Checkbox
-%%+ procset PostScript__Report__Field
-%%+ procset PostScript__Report__FieldTL
-%%+ Win1252_Encoded_Fonts
-%%+ procset PostScript_File
+%%+ procset PostScript__Report 0.05 0
+%%+ procset PostScript__Report__Checkbox 0.01 0
+%%+ procset PostScript__Report__Field 0.05 0
+%%+ procset PostScript__Report__FieldTL 0.05 0
 %%Title: (Report)
 %%Pages: 2
 %%PageOrder: Ascend
 %%EndComments
 %%BeginProlog
-%%BeginProcSet: PostScript__Report
+%%BeginResource: procset PostScript__Report 0.05 0
 /boxpath
 {
 newpath
@@ -787,15 +772,8 @@ moveto
 rmoveto
 show
 } bind def
-%%EndProcSet
-%%BeginProcSet: PostScript__Report-fonts
-/fnA /Helvetica-Bold-iso findfont 9 scalefont def
-/fnB /Helvetica-Bold-iso findfont 8 scalefont def
-/fnC /Helvetica-iso findfont 9 scalefont def
-/fnD /Helvetica-iso findfont 8 scalefont def
-/fnE /Helvetica-iso findfont 6 scalefont def
-%%EndProcSet
-%%BeginProcSet: PostScript__Report__Checkbox
+%%EndResource
+%%BeginResource: procset PostScript__Report__Checkbox 0.01 0
 /Checkbox
 {
 gsave
@@ -817,14 +795,14 @@ fill
 { pop } ifelse
 grestore
 } bind def
-%%EndProcSet
-%%BeginProcSet: PostScript__Report__Field
+%%EndResource
+%%BeginResource: procset PostScript__Report__Field 0.05 0
 /Field { gsave  4 copy  clipbox  8 4 roll setfont } bind def
 /Field-C { Field showcenter grestore } bind def
 /Field-L { Field showleft   grestore } bind def
 /Field-R { Field showright  grestore } bind def
-%%EndProcSet
-%%BeginProcSet: PostScript__Report__FieldTL
+%%EndResource
+%%BeginResource: procset PostScript__Report__FieldTL 0.05 0
 /FieldTL
 {
 gsave
@@ -871,8 +849,15 @@ sub exch pop		% Y CONTENT Xpos
 3 1 roll              % Xpos Y CONTENT
 showright
 } def
-%%EndProcSet
+%%EndResource
 %%EndProlog
+%%BeginSetup
+/fnA /Helvetica-Bold-iso findfont 9 scalefont def
+/fnB /Helvetica-Bold-iso findfont 8 scalefont def
+/fnC /Helvetica-iso findfont 9 scalefont def
+/fnD /Helvetica-iso findfont 8 scalefont def
+/fnE /Helvetica-iso findfont 6 scalefont def
+%%EndSetup
 %%Page: 1 1
 %%PageBoundingBox: 25 20 587 772
 %%BeginPageSetup
@@ -897,7 +882,7 @@ fnA 571 587 771 575 Field-R 0.5 db0
 9 3 15 /FieldTL-C 1 fnC
 (Part Number Received:)
 3 6 180 575 326 553 fnE FieldTL 0.5 db1
-(N/A)
+(-45)
 9 3 15 /FieldTL-C 1 fnC
 (Serial Number Received:)
 3 6 326 575 482 553 fnE FieldTL 0.5 db1
@@ -1134,7 +1119,7 @@ fnC 20 338 49 319 Field-C 0.5 db1
 (W1)
 fnC 49 338 89 319 Field-C 0.5 db1
 92 325
-(that field as a final resting-place for those who here gave their )
+(that field as a final resting­place for those who here gave their )
 fnC 89 338 539 319 Field-L 0.5 db1
 575.5 325
 ()
@@ -1386,7 +1371,7 @@ fnD 91 39 468 25 Field-L 0.5 db0
 (ML)
 fnE 468 39 478 25 Field-R 0.5 db0
 529 31
-(FXN-)
+(FXN­)
 fnE 478 39 531 25 Field-R 0.5 db0
 533 31
 (0)
@@ -1431,7 +1416,7 @@ userdict begin
 9 3 15 /FieldTL-C 1 fnC
 (Part Number Received:)
 3 6 180 587 326 565 fnE FieldTL 0.5 db1
-(N/A)
+(-45)
 9 3 15 /FieldTL-C 1 fnC
 (Serial Number Received:)
 3 6 326 587 482 565 fnE FieldTL 0.5 db1
@@ -1632,7 +1617,7 @@ fnD 91 39 468 25 Field-L 0.5 db0
 (ML)
 fnE 468 39 478 25 Field-R 0.5 db0
 529 31
-(FXN-)
+(FXN­)
 fnE 478 39 531 25 Field-R 0.5 db0
 533 31
 (0)
@@ -1666,8 +1651,8 @@ showpage
 ---
 align         : center
 border        : 1
-font          : Helvetica 9
-label_font    : Helvetica 6
+font          : Helvetica-iso 9
+label_font    : Helvetica-iso 6
 line_width    : 0.5
 padding_bottom: 4
 padding_side  : 3
@@ -1676,7 +1661,7 @@ row_height    : 22
 report_header:
   PostScript::Report::HBox:
     border        : 0
-    font          : Helvetica-Bold 9
+    font          : Helvetica-Bold-iso 9
     height        : 12
     padding_side  : 0
     width         : 751
@@ -1727,7 +1712,7 @@ page_header:
             value         : location
             width         : 54
           PostScript::Report::FieldTL:
-            font          : Helvetica-Bold 9
+            font          : Helvetica-Bold-iso 9
             label         : Work Order#:
             value         : workOrder
             width         : 105
@@ -1801,7 +1786,7 @@ page_header:
                     value         : revisedDueDate
                     width         : 79
       PostScript::Report::HBox:
-        font          : Helvetica-Bold 9
+        font          : Helvetica-Bold-iso 9
         height        : 19
         padding_bottom: 6
         width         : 751
@@ -1865,7 +1850,7 @@ page_footer:
     width         : 751
     children:
       PostScript::Report::Field:
-        font          : Helvetica-Bold 8
+        font          : Helvetica-Bold-iso 8
         height        : 22
         value         : PostScript::Report::Value::Constant
           value         : The component identified above was repaired/overhauled/inspected IAW current federal aviation regulations and in respect to that work, was found airworthy for return to service.
@@ -1891,14 +1876,14 @@ page_footer:
             width         : 258
       PostScript::Report::HBox:
         border        : 1
-        font          : Helvetica 6
+        font          : Helvetica-iso 6
         height        : 14
         padding_side  : 0
         width         : 751
         children:
           PostScript::Report::HBox:
             border        : 0
-            font          : Helvetica 8
+            font          : Helvetica-iso 8
             width         : 448
             children:
               PostScript::Report::Field:

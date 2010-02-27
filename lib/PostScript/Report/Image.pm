@@ -17,7 +17,7 @@ package PostScript::Report::Image;
 # ABSTRACT: Include an EPS file
 #---------------------------------------------------------------------
 
-our $VERSION = '0.03';
+our $VERSION = '0.05';
 
 use Moose;
 use MooseX::Types::Moose qw(Bool Int Num Str);
@@ -134,9 +134,25 @@ after init => sub {
   count /Image-ops_count exch def
   userdict begin
   /showpage {} def
+  % Reset graphics state to defaults:
+  0 setgray
+  0 setlinecap
+  1 setlinewidth
+  0 setlinejoin
+  10 setmiterlimit
+  [] 0 setdash
+  newpath
+  % If level != 1 then set strokeadjust and overprint to defaults
+  /languagelevel where {
+    pop
+    languagelevel 1 ne {
+      false setstrokeadjust
+      false setoverprint
+    } if
+  } if
 } bind def
 
-/Image-EPSFCleanUp { % clean up after EPSF inclusion
+/Image-EPSFCleanUp {
   count Image-ops_count sub {pop} repeat
   countdictstack Image-dict_stack sub {end} repeat
   Image-PreEPS_state restore
@@ -204,9 +220,9 @@ PostScript::Report::Image - Include an EPS file
 
 =head1 VERSION
 
-This document describes version 0.03 of
-PostScript::Report::Image, released October 29, 2009
-as part of PostScript-Report version 0.04.
+This document describes version 0.05 of
+PostScript::Report::Image, released February 26, 2010
+as part of PostScript-Report version 0.05.
 
 =head1 DESCRIPTION
 
@@ -285,7 +301,7 @@ It wouldn't have happened without them.
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2009 by Christopher J. Madsen.
+This software is copyright (c) 2010 by Christopher J. Madsen.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

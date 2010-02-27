@@ -17,13 +17,13 @@ package PostScript::Report;
 # ABSTRACT: Produce formatted reports in PostScript
 #---------------------------------------------------------------------
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 use 5.008;
 use Moose;
 use MooseX::Types::Moose qw(ArrayRef Bool CodeRef HashRef Int Num Str);
 use PostScript::Report::Types ':all';
-use PostScript::File 1.05 'pstr'; # Need cp1252 support
+use PostScript::File 2.00 'pstr'; # Need metrics support
 
 use PostScript::Report::Font ();
 use List::Util 'min';
@@ -355,6 +355,8 @@ has ps => (
   init_arg=> undef,
 );
 
+*get__PostScript_File = \&ps;   # Alias for PostScript::Convert
+
 
 has ps_functions => (
   is       => 'ro',
@@ -490,17 +492,14 @@ has _fonts => (
   init_arg => undef,
 );
 
-has _font_metrics => (
-  is       => 'ro',
-  isa      => HashRef[FontMetrics],
-  default   => sub { {} },
-  init_arg => undef,
-);
-
 
 sub get_font
 {
   my ($self, $name, $size) = @_;
+
+  unless ($name =~ s/^=//) {
+    $name .= '-iso' unless $name eq 'Symbol';
+  }
 
   my $fontname = "$name-$size";
 
@@ -531,16 +530,6 @@ sub _next_font_id
 
   $fontID;
 } # end _next_font_id
-
-# This is only for use by PostScript::Report::Font:
-sub _get_metrics
-{
-  my ($self, $name) = @_;
-
-  require Font::AFM;
-
-  $self->_font_metrics->{$name} ||= Font::AFM->new($name);
-} # end _get_metrics
 #---------------------------------------------------------------------
 
 
@@ -722,15 +711,20 @@ sub _generate_font_list
   my ($self) = @_;
 
   my %font;
+  my $ps = $self->ps;
 
   foreach my $font (values %{ $self->_fonts }) {
     my $name = $font->font;
-    $name .= '-iso' unless $name eq 'Symbol';
     $font{$font->id} = sprintf("/%s /%s findfont %s scalefont def\n",
                                $font->id, $name, $font->size);
+
+    $name =~ s/-iso$//;
+    $ps->need_resource(font => $name);
   } # end foreach $font
 
-  $self->ps_functions->{__PACKAGE__.'-fonts'} = join('', sort values %font);
+  $ps->add_setup(join('',
+    "% begin report fonts\n", (sort values %font), "% end report fonts\n"
+  ));
 } # end _generate_font_list
 
 #---------------------------------------------------------------------
@@ -742,8 +736,12 @@ sub _attach_ps_resources
   my $funcs = $self->ps_functions;
 
   foreach my $key (sort keys %$funcs) {
+    # Try to determine the version of this procset:
+    my $version;
+    $version = eval { $1->VERSION } if $key =~ /^([\w:]+)/;
+
     (my $name = $key) =~ s/:/_/g;
-    $ps->add_function($name, $funcs->{$key});
+    $ps->add_function($name, $funcs->{$key}, $version);
   } # end foreach $key
 
   %$funcs = ();                 # Clear out ps_functions
@@ -820,9 +818,9 @@ PostScript::Report - Produce formatted reports in PostScript
 
 =head1 VERSION
 
-This document describes version 0.04 of
-PostScript::Report, released October 29, 2009
-as part of PostScript-Report version 0.04.
+This document describes version 0.05 of
+PostScript::Report, released February 26, 2010
+as part of PostScript-Report version 0.05.
 
 =head1 SYNOPSIS
 
@@ -830,7 +828,12 @@ as part of PostScript-Report version 0.04.
 
     my $rpt = PostScript::Report->build(\%report_description);
 
+    # Run the report and save PostScript to a file:
     $rpt->run(\%data, \@rows)->output("filename.ps");
+
+    # Or, if you want PDF output instead of PostScript:
+    use PostScript::Convert;
+    psconvert($rpt->run(\%data, \@rows), "filename.pdf");
 
     $rpt->clear;    # If you want to save this object and run it again
 
@@ -848,6 +851,9 @@ appropriate objects.
 All measurements in a report are given in points (PostScript's native
 measurement unit).  There are 72 points in one inch
 (1 pt is about 0.3528 mm).
+
+If you want to save the report as PDF, you can pass a report object
+(after calling C<run>) to L<PostScript::Convert/psconvert>.
 
 =head1 ATTRIBUTES
 
@@ -1052,8 +1058,10 @@ L</clear> method.
 
 This is a hashref of PostScript code blocks that should be added to
 the L<PostScript::File> object.  The key should begin with the package
-inserting the code.  Blocks are added in ASCIIbetical order.  A
-component's C<init> method may add an entry here.
+inserting the code.  If a package adds more than one such block, the
+package name should be followed by a hyphen and the block name.
+Blocks are added in ASCIIbetical order.  A component's C<init> method
+may add an entry here.
 
 =head1 METHODS
 
@@ -1104,6 +1112,9 @@ a string.
 
 If you want to reuse the report object, you can call C<clear>
 afterwards to free up memory.
+
+=for Pod::Coverage
+get__PostScript_File
 
 
 =head2 clear
@@ -1186,30 +1197,16 @@ C<width> values after calling L</run>.
 
 PostScript::Report requires no configuration files or environment variables.
 
-However, it may require L<Font::AFM>, and unfortunately that's
-difficult to configure properly.  I wound up creating symlinks in
-F</usr/local/lib/afm/> (which is one of the default paths that
-Font::AFM searches if you don't have a C<METRICS> environment
-variable):
-
- Helvetica.afm
-   -> /usr/share/texmf-dist/fonts/afm/adobe/helvetic/phvr8a.afm
- Helvetica-Bold.afm
-   -> /usr/share/texmf-dist/fonts/afm/adobe/helvetic/phvb8a.afm
- Helvetica-Oblique.afm
-   -> /usr/share/texmf-dist/fonts/afm/adobe/helvetic/phvro8a.afm
-
-Paths on your system may vary.  I suggest searching for C<.afm> files,
-and then grepping them for "FontName Helvetica".
-
 =head1 INCOMPATIBILITIES
 
 None reported.
 
 =head1 BUGS AND LIMITATIONS
 
-PostScript::Report does not support characters outside of Latin-1.
-Unfortunately, supporting Unicode in PostScript is non-trivial.
+PostScript::Report does not support characters outside of Windows code
+page 1252 (aka WinLatin1), which is a superset of the printable
+characters in ISO-8859-1 (aka Latin1).  Unfortunately, supporting
+Unicode in PostScript is non-trivial.
 
 =head1 AUTHOR
 
@@ -1232,7 +1229,7 @@ It wouldn't have happened without them.
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2009 by Christopher J. Madsen.
+This software is copyright (c) 2010 by Christopher J. Madsen.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

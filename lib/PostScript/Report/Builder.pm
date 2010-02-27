@@ -378,8 +378,8 @@ PostScript::Report::Builder - Build a PostScript::Report object
 =head1 VERSION
 
 This document describes version 0.03 of
-PostScript::Report::Builder, released October 29, 2009
-as part of PostScript-Report version 0.04.
+PostScript::Report::Builder, released February 26, 2010
+as part of PostScript-Report version 0.05.
 
 =head1 SYNOPSIS
 
@@ -649,7 +649,7 @@ It wouldn't have happened without them.
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2009 by Christopher J. Madsen.
+This software is copyright (c) 2010 by Christopher J. Madsen.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
