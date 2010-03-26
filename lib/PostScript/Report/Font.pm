@@ -17,7 +17,7 @@ package PostScript::Report::Font;
 # ABSTRACT: Represents a PostScript font
 #---------------------------------------------------------------------
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 use Moose;
 use MooseX::Types::Moose qw(Bool Int Num Str);
@@ -51,7 +51,8 @@ has size => (
   required => 1,
 );
 
-has _metrics => (
+
+has metrics => (
   is       => 'ro',
   isa      => FontMetrics,
   handles  => [qw(width wrap)],
@@ -78,9 +79,9 @@ PostScript::Report::Font - Represents a PostScript font
 
 =head1 VERSION
 
-This document describes version 0.05 of
-PostScript::Report::Font, released February 26, 2010
-as part of PostScript-Report version 0.05.
+This document describes version 0.06 of
+PostScript::Report::Font, released March 26, 2010
+as part of PostScript-Report version 0.06.
 
 =head1 DESCRIPTION
 
@@ -102,6 +103,12 @@ This is the PostScript name of the font to use.
 
 This is the PostScript identifier for the scaled font (assigned by the
 document).
+
+
+=head2 metrics
+
+This is a L<PostScript::File::Metrics> object providing information
+about the dimensions of the font.
 
 
 =head2 size
@@ -139,10 +146,10 @@ No bugs have been reported.
 
 =head1 AUTHOR
 
-Christopher J. Madsen  S<< C<< <perl AT cjmweb.net> >> >>
+Christopher J. Madsen  C<< <perl AT cjmweb.net> >>
 
 Please report any bugs or feature requests to
-S<< C<< <bug-PostScript-Report AT rt.cpan.org> >> >>,
+C<< <bug-PostScript-Report AT rt.cpan.org> >>,
 or through the web interface at
 L<http://rt.cpan.org/Public/Bug/Report.html?Queue=PostScript-Report>
 

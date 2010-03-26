@@ -14,23 +14,26 @@ my %WriteMakefileArgs = (
                                  },
                        'NAME' => 'PostScript::Report',
                        'DISTNAME' => 'PostScript-Report',
+                       'CONFIGURE_REQUIRES' => {
+                                                 'ExtUtils::MakeMaker' => '6.11'
+                                               },
                        'AUTHOR' => 'Christopher J. Madsen <perl@cjmweb.net>',
+                       'BUILD_REQUIRES' => {},
                        'ABSTRACT' => 'Produce formatted reports in PostScript',
                        'EXE_FILES' => [],
-                       'VERSION' => '0.05',
-                       'LICENSE' => 'perl',
+                       'VERSION' => '0.06',
                        'PREREQ_PM' => {
-                                        'List::Util' => '0',
                                         'Scalar::Util' => '0',
+                                        'List::Util' => '0',
                                         'namespace::autoclean' => '0',
                                         'MooseX::Types' => '0',
-                                        'ExtUtils::MakeMaker' => '6.11',
                                         'File::Spec' => '0',
                                         'String::RewritePrefix' => '0',
                                         'MooseX::AttributeTree' => '0',
                                         'PostScript::File' => '2.00',
                                         'Moose' => '0.90'
-                                      }
+                                      },
+                       'LICENSE' => 'perl'
                      );
 
 

@@ -17,7 +17,7 @@ package PostScript::Report::Types;
 # ABSTRACT: type library for PostScript::Report
 #---------------------------------------------------------------------
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 use Carp 'confess';
 
@@ -117,9 +117,9 @@ PostScript::Report::Types - type library for PostScript::Report
 
 =head1 VERSION
 
-This document describes version 0.05 of
-PostScript::Report::Types, released February 26, 2010
-as part of PostScript-Report version 0.05.
+This document describes version 0.06 of
+PostScript::Report::Types, released March 26, 2010
+as part of PostScript-Report version 0.06.
 
 =head1 DESCRIPTION
 
@@ -155,7 +155,7 @@ A L<PostScript::Report::Font>.
 
 =head2 FontMetrics
 
-A L<Font::AFM>.
+A L<PostScript::File::Metrics>.
 
 =head2 HAlign
 
@@ -184,10 +184,10 @@ L<MooseX::Types>, L<MooseX::Types::Moose>.
 
 =head1 AUTHOR
 
-Christopher J. Madsen  S<< C<< <perl AT cjmweb.net> >> >>
+Christopher J. Madsen  C<< <perl AT cjmweb.net> >>
 
 Please report any bugs or feature requests to
-S<< C<< <bug-PostScript-Report AT rt.cpan.org> >> >>,
+C<< <bug-PostScript-Report AT rt.cpan.org> >>,
 or through the web interface at
 L<http://rt.cpan.org/Public/Bug/Report.html?Queue=PostScript-Report>
 

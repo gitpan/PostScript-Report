@@ -17,7 +17,7 @@ package PostScript::Report::Image;
 # ABSTRACT: Include an EPS file
 #---------------------------------------------------------------------
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 use Moose;
 use MooseX::Types::Moose qw(Bool Int Num Str);
@@ -104,16 +104,24 @@ after init => sub {
         } else {
           my $actHeight = $self->height - 2 * $self->padding_bottom;
           $scale ||= $actHeight / $imgHeight;
-          $self->_set_width( $imgWidth * $scale + 2 * $self->padding_side );
+          $self->_set_width(
+            int($imgWidth * $scale + 2 * $self->padding_side + 0.5)
+          );
         } # end else have height but not width
       } elsif ($self->has_width) {
         my $actWidth = $self->width - 2 * $self->padding_side;
         $scale ||= $actWidth / $imgWidth;
-        $self->_set_height( $imgHeight * $scale + 2 * $self->padding_bottom );
+        $self->_set_height(
+          int($imgHeight * $scale + 2 * $self->padding_bottom + 0.5)
+        );
       } else {
         $scale ||= 1;
-        $self->_set_height( $imgHeight * $scale + 2 * $self->padding_bottom );
-        $self->_set_width(  $imgWidth  * $scale + 2 * $self->padding_side   );
+        $self->_set_height(
+          int($imgHeight * $scale + 2 * $self->padding_bottom + 0.5)
+        );
+        $self->_set_width(
+          int($imgWidth  * $scale + 2 * $self->padding_side + 0.5)
+        );
       }
 
       $self->_set_scale($scale);
@@ -220,9 +228,9 @@ PostScript::Report::Image - Include an EPS file
 
 =head1 VERSION
 
-This document describes version 0.05 of
-PostScript::Report::Image, released February 26, 2010
-as part of PostScript-Report version 0.05.
+This document describes version 0.06 of
+PostScript::Report::Image, released March 26, 2010
+as part of PostScript-Report version 0.06.
 
 =head1 DESCRIPTION
 
@@ -282,10 +290,10 @@ significantly increase the file size.
 
 =head1 AUTHOR
 
-Christopher J. Madsen  S<< C<< <perl AT cjmweb.net> >> >>
+Christopher J. Madsen  C<< <perl AT cjmweb.net> >>
 
 Please report any bugs or feature requests to
-S<< C<< <bug-PostScript-Report AT rt.cpan.org> >> >>,
+C<< <bug-PostScript-Report AT rt.cpan.org> >>,
 or through the web interface at
 L<http://rt.cpan.org/Public/Bug/Report.html?Queue=PostScript-Report>
 

@@ -2,7 +2,7 @@
 #---------------------------------------------------------------------
 # Copyright 2009 Christopher J. Madsen
 #
-# Author: Christopher J. Madsen <perl@pobox.com>
+# Author: Christopher J. Madsen <perl@cjmweb.net>
 # Created: 28 Oct 2009
 #
 # This program is free software; you can redistribute it and/or modify
@@ -21,10 +21,15 @@ use warnings;
 
 use Test::More;
 
-my $diff;
-BEGIN { $diff = eval "use Test::Differences; 1" }
-
-use PostScript::Report ();
+# Load Test::Differences, if available:
+BEGIN {
+  if (eval "use Test::Differences; 1") {
+    # Not all versions of Test::Differences support changing the style:
+    eval { Test::Differences::unified_diff() }
+  } else {
+    eval '*eq_or_diff = \&is;'; # Just use "is" instead
+  }
+} # end BEGIN
 
 my $generateResults = '';
 
@@ -40,11 +45,13 @@ if (@ARGV and $ARGV[0] eq 'gen') {
   plan tests => 3;
 }
 
+require PostScript::Report;
+
 sub dumpReport
 {
   my ($rpt) = @_;
 
-  my $output;
+  my $output = '';
   open (my $out, '>', \$output);
   select $out;
   $rpt->dump;
@@ -354,6 +361,8 @@ $rpt->run($data, $rows);
 # Use sanitized output (unless $generateResults eq 'ps'):
 my $ps = $rpt->ps->testable_output($generateResults eq 'ps');
 
+$ps =~ s/(procset PostScript__Report\S*) \d+\.\d+ 0/$1 0 0/g;
+
 checkResults($ps, 'generated PostScript');
 
 checkResults(dumpReport($rpt), 'structure after run');
@@ -379,11 +388,7 @@ sub checkResults
     }
 
     # And compare it:
-    if ($diff) {                # use Test::Differences
-      eq_or_diff($got, $expected, $name);
-    } else {                    # fall back to Test::More
-      is($got, $expected, $name);
-    }
+    eq_or_diff($got, $expected, $name);
   } # end else running tests
 } # end checkResults
 
@@ -671,16 +676,16 @@ page_footer:
 %%DocumentNeededResources:
 %%+ font Courier-Bold Helvetica Helvetica-Bold
 %%DocumentSuppliedResources:
-%%+ procset PostScript__Report 0.05 0
-%%+ procset PostScript__Report__Checkbox 0.01 0
-%%+ procset PostScript__Report__Field 0.05 0
-%%+ procset PostScript__Report__FieldTL 0.05 0
+%%+ procset PostScript__Report 0 0
+%%+ procset PostScript__Report__Checkbox 0 0
+%%+ procset PostScript__Report__Field 0 0
+%%+ procset PostScript__Report__FieldTL 0 0
 %%Title: (Report)
 %%Pages: 2
 %%PageOrder: Ascend
 %%EndComments
 %%BeginProlog
-%%BeginResource: procset PostScript__Report 0.05 0
+%%BeginResource: procset PostScript__Report 0 0
 /boxpath
 {
 newpath
@@ -773,7 +778,7 @@ rmoveto
 show
 } bind def
 %%EndResource
-%%BeginResource: procset PostScript__Report__Checkbox 0.01 0
+%%BeginResource: procset PostScript__Report__Checkbox 0 0
 /Checkbox
 {
 gsave
@@ -796,13 +801,13 @@ fill
 grestore
 } bind def
 %%EndResource
-%%BeginResource: procset PostScript__Report__Field 0.05 0
+%%BeginResource: procset PostScript__Report__Field 0 0
 /Field { gsave  4 copy  clipbox  8 4 roll setfont } bind def
 /Field-C { Field showcenter grestore } bind def
 /Field-L { Field showleft   grestore } bind def
 /Field-R { Field showright  grestore } bind def
 %%EndResource
-%%BeginResource: procset PostScript__Report__FieldTL 0.05 0
+%%BeginResource: procset PostScript__Report__FieldTL 0 0
 /FieldTL
 {
 gsave

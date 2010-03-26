@@ -1,12 +1,54 @@
+PostScript::Report version 0.06, released March 26, 2010
 
 
-This archive contains the distribution PostScript-Report, version
-0.05:
+PostScript::Report helps you generate nicely formatted reports using
+PostScript. You do not need any knowledge of PostScript to use this
+package (unless you want to create new Component types).
 
-  Produce formatted reports in PostScript
 
-This software is copyright (c) 2010 by Christopher J. Madsen.
 
-This is free software; you can redistribute it and/or modify it under
-the same terms as the Perl 5 programming language system itself.
+INSTALLATION
 
+To install this module, run the following commands:
+
+    perl Makefile.PL
+    make
+    make test
+    make install
+
+
+
+DEPENDENCIES
+
+  Package                Minimum Version
+  ---------------------- ---------------
+  perl                    5.8.0
+  File::Spec              
+  List::Util              
+  Moose                   0.90
+  MooseX::AttributeTree   
+  MooseX::Types           
+  PostScript::File        2.00
+  Scalar::Util            
+  String::RewritePrefix   
+  namespace::autoclean
+
+
+
+CHANGES
+    Here's what's new in version 0.06 of PostScript::Report:
+    (See the file "Changes" for the full revision history.)
+
+	- Added the LinkField component
+	- Added the metrics attribute to Font
+	- Fixed Image to round calculated dimensions to nearest point
+	  (A Component's height & width must be integers.)
+
+
+
+COPYRIGHT AND LICENSE
+
+Copyright 2010 Christopher J. Madsen
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.

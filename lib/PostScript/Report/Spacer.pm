@@ -38,8 +38,8 @@ PostScript::Report::Spacer - Leave blank space in a report
 =head1 VERSION
 
 This document describes version 0.01 of
-PostScript::Report::Spacer, released February 26, 2010
-as part of PostScript-Report version 0.05.
+PostScript::Report::Spacer, released March 26, 2010
+as part of PostScript-Report version 0.06.
 
 =head1 DESCRIPTION
 
@@ -58,10 +58,10 @@ No bugs have been reported.
 
 =head1 AUTHOR
 
-Christopher J. Madsen  S<< C<< <perl AT cjmweb.net> >> >>
+Christopher J. Madsen  C<< <perl AT cjmweb.net> >>
 
 Please report any bugs or feature requests to
-S<< C<< <bug-PostScript-Report AT rt.cpan.org> >> >>,
+C<< <bug-PostScript-Report AT rt.cpan.org> >>,
 or through the web interface at
 L<http://rt.cpan.org/Public/Bug/Report.html?Queue=PostScript-Report>
 
