@@ -17,7 +17,7 @@ package PostScript::Report;
 # ABSTRACT: Produce formatted reports in PostScript
 #---------------------------------------------------------------------
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 use 5.008;
 use Moose;
@@ -301,15 +301,6 @@ has font => (
   init_arg => undef,
 );
 
-
-has label_font => (
-  is       => 'rw',
-  isa      => FontObj,
-  lazy     => 1,
-  default  => sub { shift->get_font(Helvetica => 6) },
-  init_arg => undef,
-);
-
 my $coerce_font = sub {
   my $orig = shift;
   my $self = shift;
@@ -321,7 +312,6 @@ my $coerce_font = sub {
 };
 
 around font       => $coerce_font;
-around label_font => $coerce_font;
 
 
 has line_width => (
@@ -343,6 +333,24 @@ has padding_side => (
   isa      => Num,
   default  => 3,
 );
+
+
+has extra_styles => (
+  is       => 'ro',
+  isa      => HashRef,
+);
+
+
+sub get_style
+{
+  my ($self, $attribute) = @_;
+
+  # See if we have the attribute:
+  my $styles = $self->extra_styles or return undef;
+
+  return $styles->{$attribute};
+} # end get_style
+
 #---------------------------------------------------------------------
 
 
@@ -782,26 +790,53 @@ sub _dump_attr
   return unless $attr->has_value($instance);
 
   my $val = $attr->get_value($instance);
+  my $name = $attr->name;
+  my $conversion;
+
+  # Dump extra_styles hash:
+  if ($name eq 'extra_styles') {
+    printf "%s%s:\n", '  ' x $level, $name;
+    foreach my $key (sort keys %$val) {
+      $conversion = ($key =~ /(?:^|_)color$/ && 'color');
+      $selfOrClass->_dump_value($level+1, $key, $val->{$key}, $conversion);
+    } # end foreach $key
+    return;
+  } # end if extra_styles
+
+  # Convert RGB colors from array back to hex triplet:
+  if (ref $val and $attr->has_type_constraint and
+      $attr->type_constraint->name eq 'PostScript::Report::Types::Color') {
+    $conversion = 'color';
+  } # end if RGB color
+
+  # Print the attribute and value:
+  $selfOrClass->_dump_value($level, $name, $val, $conversion);
+} # end _dump_attr
+
+sub _dump_value
+{
+  my ($selfOrClass, $level, $name, $val, $conversion) = @_;
 
   if (my $attrClass = blessed $val) {
     if ($attrClass eq 'PostScript::Report::Font') {
       $val = $val->font . ' ' . $val->size;
     } else {
-      printf "%s%-14s: %s\n", '  ' x $level, $attr->name, $attrClass;
+      printf "%s%-14s: %s\n", '  ' x $level, $name, $attrClass;
       $val->dump($level+1);
       return;
     }
   } # end if blessed $val
 
-  # Convert RGB colors from array back to hex triplet:
-  if (ref $val and $attr->has_type_constraint and
-      $attr->type_constraint->name eq 'PostScript::Report::Types::Color') {
+  if (not $conversion) {
+    # do nothing
+  } elsif ($conversion eq 'color' and ref $val) {
+    # Convert RGB colors from array back to hex triplet:
     $val = join('', '#', map { sprintf '%02X', 255 * $_ + 0.5 } @$val);
-  } # end if RGB color
+  } # end elsif RGB color
 
   # Print the attribute and value:
-  printf "%s%-14s: %s\n", '  ' x $level, $attr->name, $val;
-} # end _dump_attr
+  printf "%s%-14s: %s\n", '  ' x $level, $name, $val;
+} # end _dump_value
 
 #=====================================================================
 # Package Return Value:
@@ -818,9 +853,9 @@ PostScript::Report - Produce formatted reports in PostScript
 
 =head1 VERSION
 
-This document describes version 0.06 of
-PostScript::Report, released March 26, 2010
-as part of PostScript-Report version 0.06.
+This document describes version 0.07 of
+PostScript::Report, released June 19, 2010
+as part of PostScript-Report version 0.07.
 
 =head1 SYNOPSIS
 
@@ -997,11 +1032,6 @@ TBLR.)
 This is the default font.  It defaults to Helvetica 9.
 
 
-=head3 label_font
-
-This is the default label font.  It defaults to Helvetica 6.
-
-
 =head3 line_width
 
 This is the default line width (0.5 by default).
@@ -1033,6 +1063,14 @@ This is the default height of a row on the report (default 15).
 You will probably not need to use these attributes unless you are
 creating your own components or other advanced tasks.
 
+
+
+=head3 extra_styles
+
+This is a hash of additional attributes that can be inherited by child
+Components.  You wouldn't normally set this directly, because
+L<PostScript::Report::Builder> will automatically move any unknown
+attributes into this hash.
 
 
 =head3 page_count
@@ -1134,7 +1172,16 @@ later.
 Because a report needs to know what fonts will be used in it, you must
 use this method to construct L<PostScript::Report::Font> objects.  If
 the specified font has already been used in this report, the same
-C<$font_object> will be returned.
+C<$font_object> will be returned.  (Normally, fonts are constructed by
+L<PostScript::Report::Builder>.)
+
+
+=head2 get_style
+
+  $rpt->get_style($attribute)
+
+Child Components call this method to get the inherited value of any
+non-standard style attribute.
 
 
 =head2 get_value
@@ -1210,10 +1257,10 @@ Unicode in PostScript is non-trivial.
 
 =head1 AUTHOR
 
-Christopher J. Madsen  C<< <perl AT cjmweb.net> >>
+Christopher J. Madsen  S<C<< <perl AT cjmweb.net> >>>
 
 Please report any bugs or feature requests to
-C<< <bug-PostScript-Report AT rt.cpan.org> >>,
+S<C<< <bug-PostScript-Report AT rt.cpan.org> >>>,
 or through the web interface at
 L<http://rt.cpan.org/Public/Bug/Report.html?Queue=PostScript-Report>
 

@@ -17,7 +17,7 @@ package PostScript::Report::LinkField;
 # ABSTRACT: A field that can contain hyperlinks
 #---------------------------------------------------------------------
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 use Moose;
 use MooseX::Types::Moose qw(Bool Int Num Str);
@@ -53,7 +53,10 @@ has link_color => (
   is       => 'ro',
   isa      => Color,
   coerce   => 1,
-  default  => sub { [ 0, 0, 1 ] }, # Blue
+  traits   => [ TreeInherit => {
+    fetch_method => 'get_style',
+    default      => sub { [ 0, 0, 1 ] }, # Blue
+  } ],
 );
 
 
@@ -61,14 +64,20 @@ has text_color => (
   is       => 'ro',
   isa      => Color,
   coerce   => 1,
-  default  => 0, # Black
+  traits   => [ TreeInherit => {
+    fetch_method => 'get_style',
+    default      => 0, # Black
+  } ],
 );
 
 
 has underline => (
   is       => 'ro',
   isa      => Bool,
-  default  => 1,
+  traits   => [ TreeInherit => {
+    fetch_method => 'get_style',
+    default      => 1,
+  } ],
 );
 
 after init => sub {
@@ -231,6 +240,7 @@ sub parse_value
 #=====================================================================
 no Moose;
 __PACKAGE__->meta->make_immutable;
+undef @inherited;
 1;
 
 __END__
@@ -241,9 +251,9 @@ PostScript::Report::LinkField - A field that can contain hyperlinks
 
 =head1 VERSION
 
-This document describes version 0.06 of
-PostScript::Report::LinkField, released March 26, 2010
-as part of PostScript-Report version 0.06.
+This document describes version 0.07 of
+PostScript::Report::LinkField, released June 19, 2010
+as part of PostScript-Report version 0.07.
 
 =head1 DESCRIPTION
 
@@ -278,6 +288,8 @@ A LinkField has all the normal
 L<component attributes|PostScript::Report::Role::Component/ATTRIBUTES>,
 including C<padding_bottom>, C<padding_side>, and C<value>.
 
+It also has the following attributes, whose values may be inherited.
+
 =for Pod::Coverage
 draw
 parse_value
@@ -309,10 +321,10 @@ No bugs have been reported.
 
 =head1 AUTHOR
 
-Christopher J. Madsen  C<< <perl AT cjmweb.net> >>
+Christopher J. Madsen  S<C<< <perl AT cjmweb.net> >>>
 
 Please report any bugs or feature requests to
-C<< <bug-PostScript-Report AT rt.cpan.org> >>,
+S<C<< <bug-PostScript-Report AT rt.cpan.org> >>>,
 or through the web interface at
 L<http://rt.cpan.org/Public/Bug/Report.html?Queue=PostScript-Report>
 

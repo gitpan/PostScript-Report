@@ -17,15 +17,21 @@ package PostScript::Report::Role::Container;
 # ABSTRACT: A component that has components
 #---------------------------------------------------------------------
 
-our $VERSION = '0.05';
+our $VERSION = '0.07';
 
 use Moose::Role;
-use MooseX::Types::Moose qw(ArrayRef Bool Int Num Str);
+use MooseX::Types::Moose qw(ArrayRef Bool HashRef Int Num Str);
 use PostScript::Report::Types ':all';
 
 with 'PostScript::Report::Role::Component';
 
 my @inherited = (traits => [qw/TreeInherit/]);
+
+
+has extra_styles => (
+  is       => 'ro',
+  isa      => HashRef,
+);
 
 
 has children => (
@@ -67,9 +73,25 @@ after init => sub {
   $_->init($self, $report) for @{ $self->children };
 }; # end after init
 
+
+sub get_style
+{
+  my ($self, $attribute) = @_;
+
+  # See if we have the attribute:
+  my $styles = $self->extra_styles;
+
+  return $styles->{$attribute} if $styles and exists $styles->{$attribute};
+
+  # We don't have it, ask our parent:
+  my $parent = $self->parent;
+  return ($parent ? $parent->get_style($attribute) : undef);
+} # end get_style
+
 #=====================================================================
 # Package Return Value:
 
+undef @inherited;
 1;
 
 __END__
@@ -80,9 +102,9 @@ PostScript::Report::Role::Container - A component that has components
 
 =head1 VERSION
 
-This document describes version 0.05 of
-PostScript::Report::Role::Container, released March 26, 2010
-as part of PostScript-Report version 0.06.
+This document describes version 0.07 of
+PostScript::Report::Role::Container, released June 19, 2010
+as part of PostScript-Report version 0.07.
 
 =head1 DESCRIPTION
 
@@ -119,6 +141,14 @@ L<PostScript::Report::Role::Component/"Optional Attributes">.
 This is an arrayref containing the child Components.
 
 
+=head3 extra_styles
+
+This is a hash of additional attributes that can be inherited by child
+Components.  You wouldn't normally set this directly, because
+L<PostScript::Report::Builder> will automatically move any unknown
+attributes into this hash.
+
+
 =head3 row_height
 
 (Inherited) This is used by VBoxes to set the height of children that
@@ -131,6 +161,14 @@ don't specify their own height.  L<PostScript::Report::VBox>.
 The Container role provides an C<after draw> modifier to draw a border
 around the container.  The container must still provide its own
 C<draw> method.
+
+
+=head2 get_style
+
+  $parent->get_style($attribute)
+
+Child Components call this method to get the inherited value of any
+non-standard style attribute.
 
 
 =head2 init
@@ -164,10 +202,10 @@ No bugs have been reported.
 
 =head1 AUTHOR
 
-Christopher J. Madsen  C<< <perl AT cjmweb.net> >>
+Christopher J. Madsen  S<C<< <perl AT cjmweb.net> >>>
 
 Please report any bugs or feature requests to
-C<< <bug-PostScript-Report AT rt.cpan.org> >>,
+S<C<< <bug-PostScript-Report AT rt.cpan.org> >>>,
 or through the web interface at
 L<http://rt.cpan.org/Public/Bug/Report.html?Queue=PostScript-Report>
 

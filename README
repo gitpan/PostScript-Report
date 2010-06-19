@@ -1,4 +1,4 @@
-PostScript::Report version 0.06, released March 26, 2010
+PostScript::Report version 0.07, released June 19, 2010
 
 
 PostScript::Report helps you generate nicely formatted reports using
@@ -26,7 +26,7 @@ DEPENDENCIES
   File::Spec              
   List::Util              
   Moose                   0.90
-  MooseX::AttributeTree   
+  MooseX::AttributeTree   0.02
   MooseX::Types           
   PostScript::File        2.00
   Scalar::Util            
@@ -36,13 +36,14 @@ DEPENDENCIES
 
 
 CHANGES
-    Here's what's new in version 0.06 of PostScript::Report:
+    Here's what's new in version 0.07 of PostScript::Report:
     (See the file "Changes" for the full revision history.)
 
-	- Added the LinkField component
-	- Added the metrics attribute to Font
-	- Fixed Image to round calculated dimensions to nearest point
-	  (A Component's height & width must be integers.)
+	- Added extra_styles & get_style, which allows Components to
+	  inherit attributes without Containers and the Report needing
+	  to know every possible attribute
+	- Removed label_font from Report & Component
+	  (It's only used by FieldTL, and can be handled by extra_styles.)
 
 
 

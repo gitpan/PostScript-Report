@@ -17,7 +17,7 @@ package PostScript::Report::FieldTL;
 # ABSTRACT: A field with a label in the top left corner
 #---------------------------------------------------------------------
 
-our $VERSION = '0.05';
+our $VERSION = '0.07';
 
 use Moose;
 use MooseX::Types::Moose qw(Bool Int Num Str);
@@ -34,6 +34,16 @@ has label => (
   is      => 'ro',
   isa     => Str,
   default => '',
+);
+
+
+has label_font => (
+  is  => 'ro',
+  isa => FontObj,
+  traits   => [ TreeInherit => {
+    fetch_method => 'get_style',
+    default      => sub { shift->report->get_font(Helvetica => 6) },
+  } ],
 );
 
 has value => (
@@ -139,7 +149,8 @@ sub draw
 
   my $FieldTL   = $self->id;
   my $font      = $self->font;
-  my $labelSize = $self->label_font->size;
+  my $labelFont = $self->label_font;
+  my $labelSize = $labelFont->size;
 
   if ($self->multiline) {
     @lines = $font->wrap($self->width - 1.5 * $self->padding_text_side,
@@ -160,7 +171,7 @@ sub draw
     $self->padding_label_side,
     $labelSize + $self->padding_label_top,
     $x, $y, $x + $self->width, $y - $self->height,
-    $self->label_font->id,
+    $labelFont->id,
     $FieldTL,
     $self->line_width, $self->border,
   ));
@@ -179,9 +190,9 @@ PostScript::Report::FieldTL - A field with a label in the top left corner
 
 =head1 VERSION
 
-This document describes version 0.05 of
-PostScript::Report::FieldTL, released March 26, 2010
-as part of PostScript-Report version 0.06.
+This document describes version 0.07 of
+PostScript::Report::FieldTL, released June 19, 2010
+as part of PostScript-Report version 0.07.
 
 =head1 DESCRIPTION
 
@@ -206,6 +217,12 @@ including C<padding_side>, and C<value>, plus the following:
 This string is the label to print in the corner.
 
 
+=head2 label_font
+
+This is the font used to draw the label.  It defaults to Helvetica 6.
+The value may be inherited.
+
+
 =head2 multiline
 
 If true, the value will be wrapped onto multiple lines based on the
@@ -225,10 +242,10 @@ No bugs have been reported.
 
 =head1 AUTHOR
 
-Christopher J. Madsen  C<< <perl AT cjmweb.net> >>
+Christopher J. Madsen  S<C<< <perl AT cjmweb.net> >>>
 
 Please report any bugs or feature requests to
-C<< <bug-PostScript-Report AT rt.cpan.org> >>,
+S<C<< <bug-PostScript-Report AT rt.cpan.org> >>>,
 or through the web interface at
 L<http://rt.cpan.org/Public/Bug/Report.html?Queue=PostScript-Report>
 

@@ -4,8 +4,9 @@ author:
   - 'Christopher J. Madsen <perl@cjmweb.net>'
 build_requires: {}
 configure_requires:
-  ExtUtils::MakeMaker: 6.11
-generated_by: 'Dist::Zilla version 1.100711'
+  ExtUtils::MakeMaker: 6.31
+dynamic_config: 0
+generated_by: 'Dist::Zilla version 3.101520, CPAN::Meta::Converter version 2.101670'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -15,7 +16,7 @@ requires:
   File::Spec: 0
   List::Util: 0
   Moose: 0.90
-  MooseX::AttributeTree: 0
+  MooseX::AttributeTree: 0.02
   MooseX::Types: 0
   PostScript::File: 2.00
   Scalar::Util: 0
@@ -24,4 +25,127 @@ requires:
   perl: 5.8.0
 resources:
   repository: http://github.com/madsen/postscript-report
-version: 0.06
+version: 0.07
+x_Dist_Zilla:
+  plugins:
+    -
+      class: Dist::Zilla::Plugin::VersionFromModule
+      name: '@CJM/VersionFromModule'
+      version: 0.08
+    -
+      class: Dist::Zilla::Plugin::GatherDir
+      name: '@CJM/GatherDir'
+      version: 3.101520
+    -
+      class: Dist::Zilla::Plugin::PruneCruft
+      name: '@CJM/PruneCruft'
+      version: 3.101520
+    -
+      class: Dist::Zilla::Plugin::ManifestSkip
+      name: '@CJM/ManifestSkip'
+      version: 3.101520
+    -
+      class: Dist::Zilla::Plugin::MetaYAML
+      name: '@CJM/MetaYAML'
+      version: 3.101520
+    -
+      class: Dist::Zilla::Plugin::License
+      name: '@CJM/License'
+      version: 3.101520
+    -
+      class: Dist::Zilla::Plugin::PodSyntaxTests
+      name: '@CJM/PodSyntaxTests'
+      version: 3.101520
+    -
+      class: Dist::Zilla::Plugin::PodCoverageTests
+      name: '@CJM/PodCoverageTests'
+      version: 3.101520
+    -
+      class: Dist::Zilla::Plugin::ExtraTests
+      name: '@CJM/ExtraTests'
+      version: 3.101520
+    -
+      class: Dist::Zilla::Plugin::PodLoom
+      name: '@CJM/PodLoom'
+      version: 3.00
+    -
+      class: Dist::Zilla::Plugin::MakeMaker
+      name: '@CJM/MakeMaker'
+      version: 3.101520
+    -
+      class: Dist::Zilla::Plugin::MetaConfig
+      name: '@CJM/MetaConfig'
+      version: 3.101520
+    -
+      class: Dist::Zilla::Plugin::MatchManifest
+      name: '@CJM/MatchManifest'
+      version: 0.03
+    -
+      class: Dist::Zilla::Plugin::GitVersionCheckCJM
+      name: '@CJM/GitVersionCheckCJM'
+      version: 0.08
+    -
+      class: Dist::Zilla::Plugin::TemplateCJM
+      name: '@CJM/TemplateCJM'
+      version: 3.00
+    -
+      class: Dist::Zilla::Plugin::Repository
+      name: '@CJM/Repository'
+      version: 0.13
+    -
+      class: Dist::Zilla::Plugin::Git::Check
+      name: '@CJM/@Git/Check'
+      version: 1.101330
+    -
+      class: Dist::Zilla::Plugin::Git::Commit
+      name: '@CJM/@Git/Commit'
+      version: 1.101330
+    -
+      class: Dist::Zilla::Plugin::Git::Tag
+      name: '@CJM/@Git/Tag'
+      version: 1.101330
+    -
+      class: Dist::Zilla::Plugin::Git::Push
+      name: '@CJM/@Git/Push'
+      version: 1.101330
+    -
+      class: Dist::Zilla::Plugin::TestRelease
+      name: '@CJM/TestRelease'
+      version: 3.101520
+    -
+      class: Dist::Zilla::Plugin::UploadToCPAN
+      name: '@CJM/UploadToCPAN'
+      version: 3.101520
+    -
+      class: Dist::Zilla::Plugin::ArchiveRelease
+      name: '@CJM/ArchiveRelease'
+      version: 0.09
+    -
+      class: Dist::Zilla::Plugin::Prereq
+      config:
+        Dist::Zilla::Plugin::Prereq:
+          phase: runtime
+          type: requires
+      name: Prereq
+      version: 3.101520
+    -
+      class: Dist::Zilla::Plugin::FinderCode
+      name: ':InstallModules'
+      version: 3.101520
+    -
+      class: Dist::Zilla::Plugin::FinderCode
+      name: ':TestFiles'
+      version: 3.101520
+    -
+      class: Dist::Zilla::Plugin::FinderCode
+      name: ':ExecFiles'
+      version: 3.101520
+    -
+      class: Dist::Zilla::Plugin::FinderCode
+      name: ':ShareFiles'
+      version: 3.101520
+  zilla:
+    class: Dist::Zilla
+    config:
+      is_trial: 0
+    version: 3.101520

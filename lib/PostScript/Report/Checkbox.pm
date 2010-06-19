@@ -141,8 +141,8 @@ PostScript::Report::Checkbox - A checkbox with no label
 =head1 VERSION
 
 This document describes version 0.01 of
-PostScript::Report::Checkbox, released March 26, 2010
-as part of PostScript-Report version 0.06.
+PostScript::Report::Checkbox, released June 19, 2010
+as part of PostScript-Report version 0.07.
 
 =head1 DESCRIPTION
 
@@ -179,10 +179,10 @@ No bugs have been reported.
 
 =head1 AUTHOR
 
-Christopher J. Madsen  C<< <perl AT cjmweb.net> >>
+Christopher J. Madsen  S<C<< <perl AT cjmweb.net> >>>
 
 Please report any bugs or feature requests to
-C<< <bug-PostScript-Report AT rt.cpan.org> >>,
+S<C<< <bug-PostScript-Report AT rt.cpan.org> >>>,
 or through the web interface at
 L<http://rt.cpan.org/Public/Bug/Report.html?Queue=PostScript-Report>
 

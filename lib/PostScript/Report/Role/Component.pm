@@ -17,7 +17,7 @@ package PostScript::Report::Role::Component;
 # ABSTRACT: Something that can be drawn
 #---------------------------------------------------------------------
 
-our $VERSION = '0.04';
+our $VERSION = '0.07';
 
 use Moose::Role;
 use MooseX::AttributeTree ();
@@ -83,13 +83,6 @@ has font => (
 );
 
 
-has label_font => (
-  is  => 'ro',
-  isa => FontObj,
-  @inherited,
-);
-
-
 has line_width => (
   is  => 'ro',
   isa => Num,
@@ -144,6 +137,20 @@ sub init
 #---------------------------------------------------------------------
 
 
+sub report
+{
+  my $report = shift;
+
+  while (my $parent = $report->can('parent')) {
+    $report = $report->$parent or return undef;
+  }
+
+  return $report;
+} # end report
+
+#---------------------------------------------------------------------
+
+
 sub dump
 {
   my ($self, $level) = @_;
@@ -184,6 +191,7 @@ sub dump
 #=====================================================================
 # Package Return Value:
 
+undef @inherited;
 1;
 
 __END__
@@ -194,9 +202,9 @@ PostScript::Report::Role::Component - Something that can be drawn
 
 =head1 VERSION
 
-This document describes version 0.04 of
-PostScript::Report::Role::Component, released March 26, 2010
-as part of PostScript-Report version 0.06.
+This document describes version 0.07 of
+PostScript::Report::Role::Component, released June 19, 2010
+as part of PostScript-Report version 0.07.
 
 =head1 DESCRIPTION
 
@@ -262,12 +270,6 @@ This is the font used to draw normal text in the Component.
 =head3 height
 
 This is the height of the component.
-
-
-=head3 label_font
-
-This is the font used to draw the label.  Not all components have a
-label.
 
 
 =head3 line_width
@@ -383,6 +385,16 @@ additional initialization, such as calculating C<height> or C<width>.
 Also, the component should add its standard procedures to
 C<< $report->ps_functions >>.
 
+
+=head2 report
+
+  $component->report;
+
+This returns the PostScript::Report object that this Component
+ultimately belongs to, or C<undef> if it is not currently owned by a
+Report.  (You should only call this after the C<init> method has been
+called.)
+
 =head1 SEE ALSO
 
 The following components are available by default:
@@ -431,10 +443,10 @@ No bugs have been reported.
 
 =head1 AUTHOR
 
-Christopher J. Madsen  C<< <perl AT cjmweb.net> >>
+Christopher J. Madsen  S<C<< <perl AT cjmweb.net> >>>
 
 Please report any bugs or feature requests to
-C<< <bug-PostScript-Report AT rt.cpan.org> >>,
+S<C<< <bug-PostScript-Report AT rt.cpan.org> >>>,
 or through the web interface at
 L<http://rt.cpan.org/Public/Bug/Report.html?Queue=PostScript-Report>
 
