@@ -85,8 +85,8 @@ PostScript::Report::HBox - Hold components in a horizontal row
 =head1 VERSION
 
 This document describes version 0.01 of
-PostScript::Report::HBox, released June 19, 2010
-as part of PostScript-Report version 0.07.
+PostScript::Report::HBox, released July 20, 2010
+as part of PostScript-Report version 0.08.
 
 =head1 DESCRIPTION
 

@@ -66,8 +66,8 @@ PostScript::Report::Value::Page - Evaluate a page number expression
 =head1 VERSION
 
 This document describes version 0.01 of
-PostScript::Report::Value::Page, released June 19, 2010
-as part of PostScript-Report version 0.07.
+PostScript::Report::Value::Page, released July 20, 2010
+as part of PostScript-Report version 0.08.
 
 =head1 DESCRIPTION
 

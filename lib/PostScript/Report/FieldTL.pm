@@ -191,8 +191,8 @@ PostScript::Report::FieldTL - A field with a label in the top left corner
 =head1 VERSION
 
 This document describes version 0.07 of
-PostScript::Report::FieldTL, released June 19, 2010
-as part of PostScript-Report version 0.07.
+PostScript::Report::FieldTL, released July 20, 2010
+as part of PostScript-Report version 0.08.
 
 =head1 DESCRIPTION
 

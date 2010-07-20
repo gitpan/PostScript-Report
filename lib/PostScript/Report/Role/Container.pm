@@ -103,8 +103,8 @@ PostScript::Report::Role::Container - A component that has components
 =head1 VERSION
 
 This document describes version 0.07 of
-PostScript::Report::Role::Container, released June 19, 2010
-as part of PostScript-Report version 0.07.
+PostScript::Report::Role::Container, released July 20, 2010
+as part of PostScript-Report version 0.08.
 
 =head1 DESCRIPTION
 

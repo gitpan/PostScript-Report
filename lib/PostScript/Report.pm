@@ -17,7 +17,7 @@ package PostScript::Report;
 # ABSTRACT: Produce formatted reports in PostScript
 #---------------------------------------------------------------------
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 use 5.008;
 use Moose;
@@ -82,9 +82,16 @@ has detail_background => (
 );
 
 
+has first_footer => (
+  is      => 'ro',
+  isa     => SectionType,
+  default => 'page',
+);
+
+
 has footer_align => (
   is      => 'ro',
-  isa     => VAlign,
+  isa     => FooterPos,
   default => 'bottom',
 );
 
@@ -605,7 +612,8 @@ sub _calculate_page_count
 
   # If the report_footer won't fit on the last page, add another page:
   ++$pageCount
-      if $height{report_footer} > $available - $rowsThisPage * $detail;
+      if $height{report_footer} > $available - $rowsThisPage * $detail -
+                                  ($pageCount == 1 ? $height{report_header} : 0);
 
   $self->_set_page_count($pageCount);
 } # end _calculate_page_count
@@ -635,10 +643,13 @@ sub run
   my ($x, $yBot, $yTop) = ($ps->get_bounding_box)[0,1,3];
 
   my $report_header = $self->report_header;
+  my $report_footer = $self->report_footer;
   my $page_header   = $self->page_header;
   my $page_footer   = $self->page_footer;
   my $detail        = $self->detail;
-  my $footer2bottom = ($self->footer_align eq 'bottom');
+  my $footer2bottom = (($self->footer_align eq 'bottom') or
+                       ($self->footer_align eq 'split' and
+                        $self->first_footer eq 'report'));
 
   my $minY = $yBot;
   $minY += $detail->height      if $detail;
@@ -675,22 +686,38 @@ sub run
       } # end while room for another row
     } # end if $detail
 
-    if ($page_footer) {
-      if ($footer2bottom) {
-        $y = $yBot + $page_footer->height;
-        $y += $self->report_footer->height
-            if $page == $self->page_count and $self->report_footer;
-      } # end if footers should be at bottom of page
-      $page_footer->draw($x, $y, $self);
-      $y -= $page_footer->height;
-    } # end if $page_footer
-  } # end for each $page
+    # Draw the footer(s):
+    if ($report_footer and $page == $self->page_count) {
+      # This is the last page, and we have a report_footer:
+      my @footers = ($self->first_footer eq 'page'
+                     ? ($page_footer, $report_footer)
+                     : ($report_footer, $page_footer));
+      # Get only defined footers:
+      @footers = grep { defined $_ } @footers;
 
-  # Print the report footer on the last page, if we have one:
-  if ($self->report_footer) {
-    $y = $yBot + $self->report_footer->height if $footer2bottom;
-    $self->report_footer->draw($x, $y, $self);
-  } # end if have report_footer
+      # Position and draw the first footer:
+      if ($self->footer_align eq 'bottom') {
+        $y = $yBot;
+        $y += $_->height for @footers;
+      } # end if footer_align is bottom
+
+      $footers[0]->draw($x, $y, $self);
+
+      # Draw the second footer, if it exists:
+      if ($footers[1]) {
+        if ($self->footer_align eq 'split') {
+          $y = $yBot + $footers[1]->height;
+        } else {
+          $y -= $footers[0]->height;
+        }
+        $footers[1]->draw($x, $y, $self);
+      } # end if we have a second footer
+    } elsif ($page_footer) {
+      # This page has only a page_footer:
+      $y = $yBot + $page_footer->height if $footer2bottom;
+      $page_footer->draw($x, $y, $self);
+    } # end elsif $page_footer
+  } # end for each $page
 
   $self->_clear_data;
   $self->_clear_rows;
@@ -763,11 +790,18 @@ sub dump
 {
   my ($self) = @_;
 
-  my $conMeta = PostScript::Report::Role::Container->meta;
+  my %ignore = map { $_ => 1 } ($self->_sections, qw(
+    parent children page_count page_number ps ps_functions title
+  ));
 
-  my @attrs = sort { $a->name cmp $b->name }
-              grep { not $_->name =~ /^(?:_|parent|children)/ and
-                     $conMeta->has_attribute($_->name) }
+  my $i = 0;
+  my %order = map { $_ => ++$i } qw(
+    paper_size landscape top_margin bottom_margin left_margin right_margin
+  );
+
+  my @attrs = sort { ($order{$a->name}||0) <=> ($order{$b->name}||0)
+                     or $a->name cmp $b->name }
+              grep { not $ignore{$_->name} and not $_->name =~ /^_/ }
               $self->meta->get_all_attributes;
 
   $self->_dump_attr($self, $_, 0) for @attrs;
@@ -827,12 +861,33 @@ sub _dump_value
     }
   } # end if blessed $val
 
-  if (not $conversion) {
-    # do nothing
-  } elsif ($conversion eq 'color' and ref $val) {
-    # Convert RGB colors from array back to hex triplet:
-    $val = join('', '#', map { sprintf '%02X', 255 * $_ + 0.5 } @$val);
-  } # end elsif RGB color
+  if (ref $val) {
+    if (not $conversion) {
+      my $reftype = reftype($val);
+
+      if ($reftype eq 'HASH') {
+        printf "%s%s:\n", '  ' x $level, $name;
+        foreach my $key (sort keys %$val) {
+          $selfOrClass->_dump_value($level+1, $key, $val->{$key});
+        } # end foreach $key
+        return;
+      } # end if HASH
+      elsif ($reftype eq 'ARRAY') {
+        printf "%s%s:\n", '  ' x $level, $name;
+        my $prefix = ('  ' x $level) . '  - ';
+        foreach (@$val) {
+          print $prefix . $_ . "\n";
+        } # end foreach $key
+        return;
+      } # end elsif ARRAY
+      elsif ($reftype eq 'CODE') {
+        $val = 'CODEREF';
+      }
+    } elsif ($conversion eq 'color') {
+      # Convert RGB colors from array back to hex triplet:
+      $val = join('', '#', map { sprintf '%02X', 255 * $_ + 0.5 } @$val);
+    } # end elsif RGB color
+  } # end if value is a reference
 
   # Print the attribute and value:
   printf "%s%-14s: %s\n", '  ' x $level, $name, $val;
@@ -853,9 +908,9 @@ PostScript::Report - Produce formatted reports in PostScript
 
 =head1 VERSION
 
-This document describes version 0.07 of
-PostScript::Report, released June 19, 2010
-as part of PostScript-Report version 0.07.
+This document describes version 0.08 of
+PostScript::Report, released July 20, 2010
+as part of PostScript-Report version 0.08.
 
 =head1 SYNOPSIS
 
@@ -921,13 +976,14 @@ This is printed once for each row of C<@rows>.  See L</"run">.
 =head3 page_footer
 
 This is printed at the end of every page (and above the
-C<report_footer> on the last page).  Also see L</"footer_align">.
+C<report_footer> on the last page).  Also see L</"first_footer">
+and L</"footer_align">.
 
 
 =head3 report_footer
 
 This is printed at the end of the last page.
-Also see L</"footer_align">.
+Also see L</"first_footer"> and L</"footer_align">.
 
 
 =head2 Report Formatting
@@ -950,12 +1006,22 @@ detail section, or C<undef> (which means to use the same color as last
 time).
 
 
+=head3 first_footer
+
+This may be either C<page> or C<report>, and controls the order of the
+footers on the last page.  The default is C<page>, which puts the page
+footer above the report footer.
+
+
 =head3 footer_align
 
-This may be either C<top> or C<bottom>.  If it's C<bottom> (the
-default), the footers are placed at the very bottom of the page,
+This may be either C<top>, C<bottom>, or C<split>.  If it's C<bottom>
+(the default), the footers are placed at the very bottom of the page,
 touching the bottom margin.  If it's C<top>, then the footers are
-placed immediately after the last detail row.
+placed immediately after the last detail row.  If it's C<split>, then
+the first footer is placed using C<top>, and the second footer is
+placed using C<bottom>.  (Do not use C<split> unless you have defined
+both footers.)
 
 
 =head3 landscape

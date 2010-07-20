@@ -1,4 +1,4 @@
-PostScript::Report version 0.07, released June 19, 2010
+PostScript::Report version 0.08, released July 20, 2010
 
 
 PostScript::Report helps you generate nicely formatted reports using
@@ -36,14 +36,14 @@ DEPENDENCIES
 
 
 CHANGES
-    Here's what's new in version 0.07 of PostScript::Report:
+    Here's what's new in version 0.08 of PostScript::Report:
     (See the file "Changes" for the full revision history.)
 
-	- Added extra_styles & get_style, which allows Components to
-	  inherit attributes without Containers and the Report needing
-	  to know every possible attribute
-	- Removed label_font from Report & Component
-	  (It's only used by FieldTL, and can be handled by extra_styles.)
+	- Added first_footer attribute
+	- Added "split" as a possible value for footer_align
+	- Include more report attributes in dump output
+	- Fixed bug in calculating required page count
+	  (could cause report footer to overlap report)
 
 
 

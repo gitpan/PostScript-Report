@@ -252,8 +252,8 @@ PostScript::Report::LinkField - A field that can contain hyperlinks
 =head1 VERSION
 
 This document describes version 0.07 of
-PostScript::Report::LinkField, released June 19, 2010
-as part of PostScript-Report version 0.07.
+PostScript::Report::LinkField, released July 20, 2010
+as part of PostScript-Report version 0.08.
 
 =head1 DESCRIPTION
 

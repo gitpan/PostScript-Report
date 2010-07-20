@@ -141,8 +141,8 @@ PostScript::Report::Checkbox - A checkbox with no label
 =head1 VERSION
 
 This document describes version 0.01 of
-PostScript::Report::Checkbox, released June 19, 2010
-as part of PostScript-Report version 0.07.
+PostScript::Report::Checkbox, released July 20, 2010
+as part of PostScript-Report version 0.08.
 
 =head1 DESCRIPTION
 

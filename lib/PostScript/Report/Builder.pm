@@ -17,7 +17,7 @@ package PostScript::Report::Builder;
 # ABSTRACT: Build a PostScript::Report object
 #---------------------------------------------------------------------
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 use 5.008;
 use Moose;
@@ -73,6 +73,7 @@ our @constructor_args = qw(
   border
   bottom_margin
   detail_background
+  first_footer
   footer_align
   landscape
   left_margin
@@ -428,9 +429,9 @@ PostScript::Report::Builder - Build a PostScript::Report object
 
 =head1 VERSION
 
-This document describes version 0.07 of
-PostScript::Report::Builder, released June 19, 2010
-as part of PostScript-Report version 0.07.
+This document describes version 0.08 of
+PostScript::Report::Builder, released July 20, 2010
+as part of PostScript-Report version 0.08.
 
 =head1 SYNOPSIS
 
