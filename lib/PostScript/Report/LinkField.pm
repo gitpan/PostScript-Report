@@ -17,7 +17,7 @@ package PostScript::Report::LinkField;
 # ABSTRACT: A field that can contain hyperlinks
 #---------------------------------------------------------------------
 
-our $VERSION = '0.07';
+our $VERSION = '0.09';
 
 use Moose;
 use MooseX::Types::Moose qw(Bool Int Num Str);
@@ -205,13 +205,12 @@ sub parse_value
         my $startPos = pos $_;
         my $text = '';
         while (not /\G\]/gc) {
-          /\G\\(.?)/gc or /\G([^\\\]]+)/gc or goto not_a_link;
+          /\G\\(.?)/gc or /\G([^\\\]]+)/gc or undef($text), last;
           $text .= $1;
         }
-        if (/\G\(([^)]+)\)/gc) {
+        if (defined $text and /\G\(([^)]+)\)/gc) {
           push @list, { text => $text, url => $1 };
-        } else {
-        not_a_link:
+        } else { # this bracket did not begin a link
           pos $_ = $startPos;
           push @list, '' if not @list or ref $list[-1];
           $list[-1] .= '[';
@@ -251,9 +250,9 @@ PostScript::Report::LinkField - A field that can contain hyperlinks
 
 =head1 VERSION
 
-This document describes version 0.07 of
-PostScript::Report::LinkField, released July 20, 2010
-as part of PostScript-Report version 0.08.
+This document describes version 0.09 of
+PostScript::Report::LinkField, released May 5, 2011
+as part of PostScript-Report version 0.09.
 
 =head1 DESCRIPTION
 
@@ -340,7 +339,7 @@ It wouldn't have happened without them.
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2010 by Christopher J. Madsen.
+This software is copyright (c) 2011 by Christopher J. Madsen.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

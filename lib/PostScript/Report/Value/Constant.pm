@@ -48,8 +48,8 @@ PostScript::Report::Value::Constant - Return a constant value
 =head1 VERSION
 
 This document describes version 0.01 of
-PostScript::Report::Value::Constant, released July 20, 2010
-as part of PostScript-Report version 0.08.
+PostScript::Report::Value::Constant, released May 5, 2011
+as part of PostScript-Report version 0.09.
 
 =head1 DESCRIPTION
 
@@ -93,7 +93,7 @@ It wouldn't have happened without them.
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2010 by Christopher J. Madsen.
+This software is copyright (c) 2011 by Christopher J. Madsen.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

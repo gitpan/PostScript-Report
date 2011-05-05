@@ -1,4 +1,4 @@
-PostScript::Report version 0.08, released July 20, 2010
+PostScript::Report version 0.09, released May 5, 2011
 
 
 PostScript::Report helps you generate nicely formatted reports using
@@ -28,7 +28,7 @@ DEPENDENCIES
   Moose                   0.90
   MooseX::AttributeTree   0.02
   MooseX::Types           
-  PostScript::File        2.00
+  PostScript::File        2.10
   Scalar::Util            
   String::RewritePrefix   
   namespace::autoclean
@@ -36,14 +36,11 @@ DEPENDENCIES
 
 
 CHANGES
-    Here's what's new in version 0.08 of PostScript::Report:
+    Here's what's new in version 0.09 of PostScript::Report:
     (See the file "Changes" for the full revision history.)
 
-	- Added first_footer attribute
-	- Added "split" as a possible value for footer_align
-	- Include more report attributes in dump output
-	- Fixed bug in calculating required page count
-	  (could cause report footer to overlap report)
+	- Use the improved API in PostScript::File 2.10
+	- Fixed LinkField to avoid deprecation warnings in Perl 5.12
 
 
 

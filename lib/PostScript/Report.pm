@@ -17,13 +17,13 @@ package PostScript::Report;
 # ABSTRACT: Produce formatted reports in PostScript
 #---------------------------------------------------------------------
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 use 5.008;
 use Moose;
 use MooseX::Types::Moose qw(ArrayRef Bool CodeRef HashRef Int Num Str);
 use PostScript::Report::Types ':all';
-use PostScript::File 2.00 'pstr'; # Need metrics support
+use PostScript::File 2.10 'pstr'; # Use improved API
 
 use PostScript::Report::Font ();
 use List::Util 'min';
@@ -272,10 +272,7 @@ sub _init
 END PS
 } # end _init
 #---------------------------------------------------------------------
-
-
-sub width  { my @bb = shift->ps->get_bounding_box;  $bb[2] - $bb[0] }
-sub height { my @bb = shift->ps->get_bounding_box;  $bb[3] - $bb[1] }
+# NOTE: width and height are now handled by the ps attribute:
 
 
 has row_height => (
@@ -366,7 +363,11 @@ has ps => (
   isa     => 'PostScript::File',
   writer  => '_set_ps',
   clearer => 'clear',
-  handles => ['output'],
+  handles => {
+    output => 'output',
+    width  => 'get_printable_width',
+    height => 'get_printable_height',
+  },
   init_arg=> undef,
 );
 
@@ -449,6 +450,7 @@ sub _build_ps
     file_ext    => '',
     font_suffix => '-iso',
     landscape   => $self->landscape,
+    newpage     => 0,
     %{ $self->ps_parameters },
   );
 } # end _build_ps
@@ -658,7 +660,7 @@ sub run
   my $y;
   for my $page (1 .. $self->page_count) {
     $self->_set_page_number($page);
-    $ps->newpage($page) if $page > 1;
+    $ps->newpage($page);
 
     $y = $yTop;
 
@@ -908,9 +910,9 @@ PostScript::Report - Produce formatted reports in PostScript
 
 =head1 VERSION
 
-This document describes version 0.08 of
-PostScript::Report, released July 20, 2010
-as part of PostScript-Report version 0.08.
+This document describes version 0.09 of
+PostScript::Report, released May 5, 2011
+as part of PostScript-Report version 0.09.
 
 =head1 SYNOPSIS
 
@@ -994,7 +996,7 @@ formatting of the report as a whole.  All dimensions are in points.
 
 =head3 bottom_margin
 
-This the bottom margin (default 72, or one inch).
+This is the bottom margin (default 72, or one inch).
 
 
 =head3 detail_background
@@ -1032,7 +1034,7 @@ The default is false.
 
 =head3 left_margin
 
-This the left margin (default 72, or one inch).
+This is the left margin (default 72, or one inch).
 
 
 =head3 paper_size
@@ -1051,7 +1053,7 @@ other PostScript::Report attributes).
 
 =head3 right_margin
 
-This the bottom margin (default 72, or one inch).
+This is the right margin (default 72, or one inch).
 
 
 =head3 title
@@ -1063,7 +1065,7 @@ The default is C<Report>.
 
 =head3 top_margin
 
-This the top margin (default 72, or one inch).
+This is the top margin (default 72, or one inch).
 
 
 =head2 Component Formatting
@@ -1342,7 +1344,7 @@ It wouldn't have happened without them.
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2010 by Christopher J. Madsen.
+This software is copyright (c) 2011 by Christopher J. Madsen.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
