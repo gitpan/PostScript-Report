@@ -17,7 +17,8 @@ package PostScript::Report::Field;
 # ABSTRACT: A simple field with no label
 #---------------------------------------------------------------------
 
-our $VERSION = '0.05';
+our $VERSION = '0.10';
+# This file is part of PostScript-Report 0.10 (April 4, 2012)
 
 use Moose;
 use MooseX::Types::Moose qw(Bool Int Num Str);
@@ -50,6 +51,8 @@ has padding_side => (
 after init => sub {
   my ($self, $parent, $report) = @_;
 
+  $report->ps->use_functions(qw(clipBox showCenter showLeft showRight));
+
   # Use __PACKAGE__ instead of blessed $self because the string is
   # constant.  Subclasses should either use sub id { 'Field' } or
   # define their own comparable functions:
@@ -57,10 +60,10 @@ after init => sub {
 %---------------------------------------------------------------------
 % X Y STRING FONT L T R B Field-X
 
-/Field { gsave  4 copy  clipbox  8 4 roll setfont } bind def
-/Field-C { Field showcenter grestore } bind def
-/Field-L { Field showleft   grestore } bind def
-/Field-R { Field showright  grestore } bind def
+/Field { gsave  4 copy  clipBox  8 4 roll setfont } bind def
+/Field-C { Field showCenter grestore } bind def
+/Field-L { Field showLeft   grestore } bind def
+/Field-R { Field showRight  grestore } bind def
 END PS
 }; # end after init
 
@@ -101,9 +104,9 @@ PostScript::Report::Field - A simple field with no label
 
 =head1 VERSION
 
-This document describes version 0.05 of
-PostScript::Report::Field, released May 5, 2011
-as part of PostScript-Report version 0.09.
+This document describes version 0.10 of
+PostScript::Report::Field, released April 4, 2012
+as part of PostScript-Report version 0.10.
 
 =head1 DESCRIPTION
 
@@ -133,10 +136,10 @@ No bugs have been reported.
 
 Christopher J. Madsen  S<C<< <perl AT cjmweb.net> >>>
 
-Please report any bugs or feature requests to
-S<C<< <bug-PostScript-Report AT rt.cpan.org> >>>,
+Please report any bugs or feature requests
+to S<C<< <bug-PostScript-Report AT rt.cpan.org> >>>
 or through the web interface at
-L<http://rt.cpan.org/Public/Bug/Report.html?Queue=PostScript-Report>
+L<< http://rt.cpan.org/Public/Bug/Report.html?Queue=PostScript-Report >>.
 
 You can follow or contribute to PostScript-Report's development at
 L<< http://github.com/madsen/postscript-report >>.
@@ -150,7 +153,7 @@ It wouldn't have happened without them.
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2011 by Christopher J. Madsen.
+This software is copyright (c) 2012 by Christopher J. Madsen.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

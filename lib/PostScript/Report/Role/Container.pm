@@ -103,8 +103,8 @@ PostScript::Report::Role::Container - A component that has components
 =head1 VERSION
 
 This document describes version 0.07 of
-PostScript::Report::Role::Container, released May 5, 2011
-as part of PostScript-Report version 0.09.
+PostScript::Report::Role::Container, released April 4, 2012
+as part of PostScript-Report version 0.10.
 
 =head1 DESCRIPTION
 
@@ -204,10 +204,10 @@ No bugs have been reported.
 
 Christopher J. Madsen  S<C<< <perl AT cjmweb.net> >>>
 
-Please report any bugs or feature requests to
-S<C<< <bug-PostScript-Report AT rt.cpan.org> >>>,
+Please report any bugs or feature requests
+to S<C<< <bug-PostScript-Report AT rt.cpan.org> >>>
 or through the web interface at
-L<http://rt.cpan.org/Public/Bug/Report.html?Queue=PostScript-Report>
+L<< http://rt.cpan.org/Public/Bug/Report.html?Queue=PostScript-Report >>.
 
 You can follow or contribute to PostScript-Report's development at
 L<< http://github.com/madsen/postscript-report >>.
@@ -221,7 +221,7 @@ It wouldn't have happened without them.
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2011 by Christopher J. Madsen.
+This software is copyright (c) 2012 by Christopher J. Madsen.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

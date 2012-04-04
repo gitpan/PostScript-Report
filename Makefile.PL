@@ -2,39 +2,42 @@
 use strict;
 use warnings;
 
-BEGIN { require 5.8.0; }
+use 5.008;
 
 use ExtUtils::MakeMaker 6.30;
 
 
 
 my %WriteMakefileArgs = (
-  'ABSTRACT' => 'Produce formatted reports in PostScript',
-  'AUTHOR' => 'Christopher J. Madsen <perl@cjmweb.net>',
-  'BUILD_REQUIRES' => {
-    'Test::More' => '0.88'
+  "ABSTRACT" => "Produce formatted reports in PostScript",
+  "AUTHOR" => "Christopher J. Madsen <perl\@cjmweb.net>",
+  "BUILD_REQUIRES" => {
+    "Test::More" => "0.88"
   },
-  'CONFIGURE_REQUIRES' => {
-    'ExtUtils::MakeMaker' => '6.30'
+  "CONFIGURE_REQUIRES" => {
+    "ExtUtils::MakeMaker" => "6.30"
   },
-  'DISTNAME' => 'PostScript-Report',
-  'EXE_FILES' => [],
-  'LICENSE' => 'perl',
-  'NAME' => 'PostScript::Report',
-  'PREREQ_PM' => {
-    'File::Spec' => '0',
-    'List::Util' => '0',
-    'Moose' => '0.90',
-    'MooseX::AttributeTree' => '0.02',
-    'MooseX::Types' => '0',
-    'PostScript::File' => '2.10',
-    'Scalar::Util' => '0',
-    'String::RewritePrefix' => '0',
-    'namespace::autoclean' => '0'
+  "DISTNAME" => "PostScript-Report",
+  "EXE_FILES" => [],
+  "LICENSE" => "perl",
+  "NAME" => "PostScript::Report",
+  "PREREQ_PM" => {
+    "Carp" => 0,
+    "File::Spec" => 0,
+    "List::Util" => 0,
+    "Moose" => "0.90",
+    "Moose::Role" => 0,
+    "MooseX::AttributeTree" => "0.02",
+    "MooseX::Types" => 0,
+    "MooseX::Types::Moose" => 0,
+    "PostScript::File" => "2.20",
+    "Scalar::Util" => 0,
+    "String::RewritePrefix" => 0,
+    "namespace::autoclean" => 0
   },
-  'VERSION' => '0.09',
-  'test' => {
-    'TESTS' => 't/*.t'
+  "VERSION" => "0.10",
+  "test" => {
+    "TESTS" => "t/*.t"
   }
 );
 

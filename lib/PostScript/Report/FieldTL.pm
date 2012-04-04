@@ -17,7 +17,8 @@ package PostScript::Report::FieldTL;
 # ABSTRACT: A field with a label in the top left corner
 #---------------------------------------------------------------------
 
-our $VERSION = '0.07';
+our $VERSION = '0.10';
+# This file is part of PostScript-Report 0.10 (April 4, 2012)
 
 use Moose;
 use MooseX::Types::Moose qw(Bool Int Num Str);
@@ -72,6 +73,8 @@ sub padding_text_top  { 0 }
 after init => sub {
   my ($self, $parent, $report) = @_;
 
+  $report->ps->use_functions(qw(clipBox showCenter showLeft showRight));
+
   # Use __PACKAGE__ instead of blessed $self because the string is
   # constant.  Subclasses should either use sub id { 'FieldTL' } or
   # define their own comparable functions:
@@ -84,12 +87,12 @@ after init => sub {
 {
   gsave
   setfont
-  4 copy clipbox	% C... Csp Cx Cy FUNC LINES CF LABEL Lx Ly L T R B
+  4 copy clipBox	% C... Csp Cx Cy FUNC LINES CF LABEL Lx Ly L T R B
   3 index		% C... Csp Cx Cy FUNC LINES CF LABEL Lx Ly L T R B L
   7 -1 roll add		% C... Csp Cx Cy FUNC LINES CF LABEL Ly L T R B LblX
   3 index		% C... Csp Cx Cy FUNC LINES CF LABEL Ly L T R B LblX T
   7 -1 roll sub		% C... Csp Cx Cy FUNC LINES CF LABEL L T R B LblX LblY
-  7 -1 roll showleft	% C... Csp Cx Cy FUNC LINES CF L T R B
+  7 -1 roll showLeft	% C... Csp Cx Cy FUNC LINES CF L T R B
   5 -1 roll setfont	% C... Csp Cx Cy FUNC LINES L T R B
   2 index		% C... Csp Cx Cy FUNC LINES L T R B T
   8 -1 roll sub		% C... Csp Cx FUNC LINES L T R B Ypos
@@ -118,7 +121,7 @@ after init => sub {
   pop                   % Y CONTENT L R
   add 2 div             % Y CONTENT Xpos
   3 1 roll              % Xpos Y CONTENT
-  showcenter
+  showCenter
 } def
 
 %---------------------------------------------------------------------
@@ -127,7 +130,7 @@ after init => sub {
 /FieldTL-L {
   exch pop add		% Y CONTENT Xpos
   3 1 roll              % Xpos Y CONTENT
-  showleft
+  showLeft
 } def
 
 %---------------------------------------------------------------------
@@ -136,7 +139,7 @@ after init => sub {
 /FieldTL-R {
   sub exch pop		% Y CONTENT Xpos
   3 1 roll              % Xpos Y CONTENT
-  showright
+  showRight
 } def
 END PS
 };
@@ -190,9 +193,9 @@ PostScript::Report::FieldTL - A field with a label in the top left corner
 
 =head1 VERSION
 
-This document describes version 0.07 of
-PostScript::Report::FieldTL, released May 5, 2011
-as part of PostScript-Report version 0.09.
+This document describes version 0.10 of
+PostScript::Report::FieldTL, released April 4, 2012
+as part of PostScript-Report version 0.10.
 
 =head1 DESCRIPTION
 
@@ -209,7 +212,9 @@ A FieldTL has all the normal
 L<component attributes|PostScript::Report::Role::Component/ATTRIBUTES>,
 including C<padding_side>, and C<value>, plus the following:
 
-=for Pod::Coverage draw padding_
+=for Pod::Coverage
+draw
+padding_.*
 
 
 =head2 label
@@ -244,10 +249,10 @@ No bugs have been reported.
 
 Christopher J. Madsen  S<C<< <perl AT cjmweb.net> >>>
 
-Please report any bugs or feature requests to
-S<C<< <bug-PostScript-Report AT rt.cpan.org> >>>,
+Please report any bugs or feature requests
+to S<C<< <bug-PostScript-Report AT rt.cpan.org> >>>
 or through the web interface at
-L<http://rt.cpan.org/Public/Bug/Report.html?Queue=PostScript-Report>
+L<< http://rt.cpan.org/Public/Bug/Report.html?Queue=PostScript-Report >>.
 
 You can follow or contribute to PostScript-Report's development at
 L<< http://github.com/madsen/postscript-report >>.
@@ -261,7 +266,7 @@ It wouldn't have happened without them.
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2011 by Christopher J. Madsen.
+This software is copyright (c) 2012 by Christopher J. Madsen.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

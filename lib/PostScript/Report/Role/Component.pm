@@ -17,10 +17,11 @@ package PostScript::Report::Role::Component;
 # ABSTRACT: Something that can be drawn
 #---------------------------------------------------------------------
 
-our $VERSION = '0.07';
+our $VERSION = '0.10';
+# This file is part of PostScript-Report 0.10 (April 4, 2012)
 
 use Moose::Role;
-use MooseX::AttributeTree ();
+use MooseX::AttributeTree 0.02 (); # fetch_method & default
 use MooseX::Types::Moose qw(Bool Int Num Str);
 use PostScript::Report::Types ':all';
 
@@ -97,7 +98,7 @@ before draw => sub {
 
   if (defined(my $background = $self->background)) {
     $rpt->ps->add_to_page( sprintf(
-      "%d %d %d %d %s fillbox\n",
+      "%d %d %d %d %s fillBox\n",
       $x, $y, $x + $self->width, $y - $self->height,
       PostScript::File::str($background)
     ));
@@ -133,6 +134,7 @@ sub init
   my ($self, $parent, $report) = @_;
 
   $self->_set_parent($parent);
+  $report->ps->use_functions('fillBox');
 } # end init
 #---------------------------------------------------------------------
 
@@ -202,9 +204,9 @@ PostScript::Report::Role::Component - Something that can be drawn
 
 =head1 VERSION
 
-This document describes version 0.07 of
-PostScript::Report::Role::Component, released May 5, 2011
-as part of PostScript-Report version 0.09.
+This document describes version 0.10 of
+PostScript::Report::Role::Component, released April 4, 2012
+as part of PostScript-Report version 0.10.
 
 =head1 DESCRIPTION
 
@@ -445,10 +447,10 @@ No bugs have been reported.
 
 Christopher J. Madsen  S<C<< <perl AT cjmweb.net> >>>
 
-Please report any bugs or feature requests to
-S<C<< <bug-PostScript-Report AT rt.cpan.org> >>>,
+Please report any bugs or feature requests
+to S<C<< <bug-PostScript-Report AT rt.cpan.org> >>>
 or through the web interface at
-L<http://rt.cpan.org/Public/Bug/Report.html?Queue=PostScript-Report>
+L<< http://rt.cpan.org/Public/Bug/Report.html?Queue=PostScript-Report >>.
 
 You can follow or contribute to PostScript-Report's development at
 L<< http://github.com/madsen/postscript-report >>.
@@ -462,7 +464,7 @@ It wouldn't have happened without them.
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2011 by Christopher J. Madsen.
+This software is copyright (c) 2012 by Christopher J. Madsen.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
