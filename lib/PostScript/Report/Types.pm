@@ -17,7 +17,7 @@ package PostScript::Report::Types;
 # ABSTRACT: type library for PostScript::Report
 #---------------------------------------------------------------------
 
-our $VERSION = '0.08';
+our $VERSION = '0.11';
 
 use Carp 'confess';
 
@@ -49,24 +49,15 @@ coerce BorderStyle,
     $style;
   }; # end coerce BorderStyle from BorderStyleNC
 
-subtype Component,
-  as role_type('PostScript::Report::Role::Component');
-
-subtype Container,
-  as role_type('PostScript::Report::Role::Container');
-
-subtype FontObj,
-  as class_type('PostScript::Report::Font');
-
-subtype FontMetrics,
-  as class_type('PostScript::File::Metrics');
+role_type  Component,   { role  => 'PostScript::Report::Role::Component' };
+role_type  Container,   { role  => 'PostScript::Report::Role::Container' };
+class_type FontObj,     { class => 'PostScript::Report::Font' };
+class_type FontMetrics, { class => 'PostScript::File::Metrics' };
+class_type Report,      { class => 'PostScript::Report' };
 
 enum(FooterPos, qw(bottom split top));
 
 enum(HAlign, qw(center left right));
-
-subtype Report,
-  as class_type('PostScript::Report');
 
 subtype RptValue,
   as Str|role_type('PostScript::Report::Role::Value');
@@ -121,9 +112,9 @@ PostScript::Report::Types - type library for PostScript::Report
 
 =head1 VERSION
 
-This document describes version 0.08 of
-PostScript::Report::Types, released April 4, 2012
-as part of PostScript-Report version 0.10.
+This document describes version 0.11 of
+PostScript::Report::Types, released April 27, 2013
+as part of PostScript-Report version 0.11.
 
 =head1 DESCRIPTION
 
@@ -207,7 +198,7 @@ It wouldn't have happened without them.
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2012 by Christopher J. Madsen.
+This software is copyright (c) 2013 by Christopher J. Madsen.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

@@ -85,8 +85,8 @@ PostScript::Report::HBox - Hold components in a horizontal row
 =head1 VERSION
 
 This document describes version 0.01 of
-PostScript::Report::HBox, released April 4, 2012
-as part of PostScript-Report version 0.10.
+PostScript::Report::HBox, released April 27, 2013
+as part of PostScript-Report version 0.11.
 
 =head1 DESCRIPTION
 
@@ -144,7 +144,7 @@ It wouldn't have happened without them.
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2012 by Christopher J. Madsen.
+This software is copyright (c) 2013 by Christopher J. Madsen.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

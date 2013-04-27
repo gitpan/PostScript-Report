@@ -1,4 +1,4 @@
-PostScript::Report version 0.10, released April 4, 2012
+PostScript::Report version 0.11, released April 27, 2013
 
 
 PostScript::Report helps you generate nicely formatted reports using
@@ -22,7 +22,7 @@ DEPENDENCIES
 
   Package                Minimum Version
   ---------------------- ---------------
-  perl                    5.008
+  perl                    5.8.0
   Carp                    
   File::Spec              
   List::Util              
@@ -39,10 +39,15 @@ DEPENDENCIES
 
 
 CHANGES
-    Here's what's new in version 0.10 of PostScript::Report:
+    Here's what's new in version 0.11 of PostScript::Report:
     (See the file "Changes" for the full revision history.)
 
-	- Use the function library provided by PostScript::File 2.20
+	- Clean up type library
+	- Warn about conflict between MooseX::Types 0.32 and greater
+	  with Moose versions before 2.0800 (fixes RT#77299)
+	- Stabilize order of font creation.  Didn't affect printed
+	  output, but generated code could be different between runs,
+	  causing test failures on Perl 5.17.
 
 
 

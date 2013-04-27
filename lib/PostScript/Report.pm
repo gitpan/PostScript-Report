@@ -17,8 +17,8 @@ package PostScript::Report;
 # ABSTRACT: Produce formatted reports in PostScript
 #---------------------------------------------------------------------
 
-our $VERSION = '0.10';
-# This file is part of PostScript-Report 0.10 (April 4, 2012)
+our $VERSION = '0.11';
+# This file is part of PostScript-Report 0.11 (April 27, 2013)
 
 use 5.008;
 use Moose 0.90;                 # Moose::Meta::Attribute::Native
@@ -797,9 +797,9 @@ PostScript::Report - Produce formatted reports in PostScript
 
 =head1 VERSION
 
-This document describes version 0.10 of
-PostScript::Report, released April 4, 2012
-as part of PostScript-Report version 0.10.
+This document describes version 0.11 of
+PostScript::Report, released April 27, 2013
+as part of PostScript-Report version 0.11.
 
 =head1 SYNOPSIS
 
@@ -1210,6 +1210,11 @@ page 1252 (aka WinLatin1), which is a superset of the printable
 characters in ISO-8859-1 (aka Latin1).  Unfortunately, supporting
 Unicode in PostScript is non-trivial.
 
+There is a conflict between versions of MooseX::Types 0.32 and greater
+with Moose versions before 2.0800.  PostScript::Report's type library
+will trigger that bug.  Either upgrade Moose to 2.0800 or greater, or
+downgrade MooseX::Types to 0.31 or below.
+
 =head1 AUTHOR
 
 Christopher J. Madsen  S<C<< <perl AT cjmweb.net> >>>
@@ -1231,7 +1236,7 @@ It wouldn't have happened without them.
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2012 by Christopher J. Madsen.
+This software is copyright (c) 2013 by Christopher J. Madsen.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
