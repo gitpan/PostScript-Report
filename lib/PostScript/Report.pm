@@ -17,8 +17,8 @@ package PostScript::Report;
 # ABSTRACT: Produce formatted reports in PostScript
 #---------------------------------------------------------------------
 
-our $VERSION = '0.11';
-# This file is part of PostScript-Report 0.11 (April 27, 2013)
+our $VERSION = '0.12';
+# This file is part of PostScript-Report 0.12 (May 4, 2013)
 
 use 5.008;
 use Moose 0.90;                 # Moose::Meta::Attribute::Native
@@ -797,9 +797,9 @@ PostScript::Report - Produce formatted reports in PostScript
 
 =head1 VERSION
 
-This document describes version 0.11 of
-PostScript::Report, released April 27, 2013
-as part of PostScript-Report version 0.11.
+This document describes version 0.12 of
+PostScript::Report, released May 4, 2013
+as part of PostScript-Report version 0.12.
 
 =head1 SYNOPSIS
 

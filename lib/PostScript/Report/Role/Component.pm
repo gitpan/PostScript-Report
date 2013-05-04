@@ -18,7 +18,7 @@ package PostScript::Report::Role::Component;
 #---------------------------------------------------------------------
 
 our $VERSION = '0.10';
-# This file is part of PostScript-Report 0.11 (April 27, 2013)
+# This file is part of PostScript-Report 0.12 (May 4, 2013)
 
 use Moose::Role;
 use MooseX::AttributeTree 0.02 (); # fetch_method & default
@@ -205,8 +205,8 @@ PostScript::Report::Role::Component - Something that can be drawn
 =head1 VERSION
 
 This document describes version 0.10 of
-PostScript::Report::Role::Component, released April 27, 2013
-as part of PostScript-Report version 0.11.
+PostScript::Report::Role::Component, released May 4, 2013
+as part of PostScript-Report version 0.12.
 
 =head1 DESCRIPTION
 

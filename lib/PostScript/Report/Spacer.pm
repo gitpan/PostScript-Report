@@ -38,8 +38,8 @@ PostScript::Report::Spacer - Leave blank space in a report
 =head1 VERSION
 
 This document describes version 0.01 of
-PostScript::Report::Spacer, released April 27, 2013
-as part of PostScript-Report version 0.11.
+PostScript::Report::Spacer, released May 4, 2013
+as part of PostScript-Report version 0.12.
 
 =head1 DESCRIPTION
 

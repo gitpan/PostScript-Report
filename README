@@ -1,4 +1,4 @@
-PostScript::Report version 0.11, released April 27, 2013
+PostScript::Report version 0.12, released May 4, 2013
 
 
 PostScript::Report helps you generate nicely formatted reports using
@@ -39,15 +39,17 @@ DEPENDENCIES
 
 
 CHANGES
-    Here's what's new in version 0.11 of PostScript::Report:
+    Here's what's new in version 0.12 of PostScript::Report:
     (See the file "Changes" for the full revision history.)
 
-	- Clean up type library
-	- Warn about conflict between MooseX::Types 0.32 and greater
-	  with Moose versions before 2.0800 (fixes RT#77299)
-	- Stabilize order of font creation.  Didn't affect printed
-	  output, but generated code could be different between runs,
-	  causing test failures on Perl 5.17.
+	- No functional changes; just updated metadata
+	- Add Moose & MooseX::Types to configure_requires.
+	  They're not actually required by Makefile.PL, but if they're
+	  not installed, it skips the version check introduced in
+	  version 0.11.  Since many CPAN testers don't install modules
+	  normally, but just build an @INC containing only the listed
+	  requirements, they always skipped the version check and
+	  continued to send reports for that Moose bug.
 
 
 

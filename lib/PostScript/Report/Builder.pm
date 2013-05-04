@@ -18,7 +18,7 @@ package PostScript::Report::Builder;
 #---------------------------------------------------------------------
 
 our $VERSION = '0.11';
-# This file is part of PostScript-Report 0.11 (April 27, 2013)
+# This file is part of PostScript-Report 0.12 (May 4, 2013)
 
 use 5.008;
 use Moose;
@@ -431,8 +431,8 @@ PostScript::Report::Builder - Build a PostScript::Report object
 =head1 VERSION
 
 This document describes version 0.11 of
-PostScript::Report::Builder, released April 27, 2013
-as part of PostScript-Report version 0.11.
+PostScript::Report::Builder, released May 4, 2013
+as part of PostScript-Report version 0.12.
 
 =head1 SYNOPSIS
 

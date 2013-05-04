@@ -18,7 +18,7 @@ package PostScript::Report::FieldTL;
 #---------------------------------------------------------------------
 
 our $VERSION = '0.10';
-# This file is part of PostScript-Report 0.11 (April 27, 2013)
+# This file is part of PostScript-Report 0.12 (May 4, 2013)
 
 use Moose;
 use MooseX::Types::Moose qw(Bool Int Num Str);
@@ -194,8 +194,8 @@ PostScript::Report::FieldTL - A field with a label in the top left corner
 =head1 VERSION
 
 This document describes version 0.10 of
-PostScript::Report::FieldTL, released April 27, 2013
-as part of PostScript-Report version 0.11.
+PostScript::Report::FieldTL, released May 4, 2013
+as part of PostScript-Report version 0.12.
 
 =head1 DESCRIPTION
 

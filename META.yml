@@ -7,6 +7,8 @@ build_requires:
   Test::More: 0.88
 configure_requires:
   ExtUtils::MakeMaker: 6.30
+  Moose: 0
+  MooseX::Types: 0
   perl: 5.008
   version: 0.77
 dynamic_config: 0
@@ -32,7 +34,7 @@ requires:
   perl: 5.008
 resources:
   repository: git://github.com/madsen/postscript-report.git
-version: 0.11
+version: 0.12
 x_Dist_Zilla:
   perl:
     version: 5.014002
@@ -155,19 +157,6 @@ x_Dist_Zilla:
       class: Dist::Zilla::Plugin::AutoPrereqs
       name: AutoPrereqs
       version: 4.300034
-    -
-      class: Dist::Zilla::Plugin::RemovePhasedPrereqs
-      config:
-        Dist::Zilla::Plugin::RemovePhasedPrereqs:
-          remove_build: []
-          remove_configure:
-            - Moose
-            - MooseX::Types
-          remove_develop: []
-          remove_runtime: []
-          remove_test: []
-      name: RemovePhasedPrereqs
-      version: 0.002
     -
       class: Dist::Zilla::Plugin::FinderCode
       name: ':InstallModules'

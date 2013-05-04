@@ -48,8 +48,8 @@ PostScript::Report::Value::Constant - Return a constant value
 =head1 VERSION
 
 This document describes version 0.01 of
-PostScript::Report::Value::Constant, released April 27, 2013
-as part of PostScript-Report version 0.11.
+PostScript::Report::Value::Constant, released May 4, 2013
+as part of PostScript-Report version 0.12.
 
 =head1 DESCRIPTION
 

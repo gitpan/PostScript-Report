@@ -38,6 +38,8 @@ my %WriteMakefileArgs = (
   },
   'CONFIGURE_REQUIRES' => {
     'ExtUtils::MakeMaker' => '6.30',
+    'Moose' => '0',
+    'MooseX::Types' => '0',
     'version' => '0.77'
   },
   'PREREQ_PM' => {
