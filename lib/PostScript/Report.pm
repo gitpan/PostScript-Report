@@ -17,8 +17,8 @@ package PostScript::Report;
 # ABSTRACT: Produce formatted reports in PostScript
 #---------------------------------------------------------------------
 
-our $VERSION = '0.12';
-# This file is part of PostScript-Report 0.12 (May 4, 2013)
+our $VERSION = '0.13';
+# This file is part of PostScript-Report 0.13 (November 30, 2013)
 
 use 5.008;
 use Moose 0.90;                 # Moose::Meta::Attribute::Native
@@ -662,7 +662,7 @@ sub _attach_ps_resources
   foreach my $key (sort keys %$funcs) {
     # Try to determine the version of this procset:
     my $version;
-    $version = eval { $1->VERSION } if $key =~ /^([\w:]+)/;
+    $version = do { local $@; eval { $1->VERSION } } if $key =~ /^([\w:]+)/;
 
     (my $name = $key) =~ s/:/_/g;
     $ps->add_procset($name, $funcs->{$key}, $version);
@@ -797,9 +797,9 @@ PostScript::Report - Produce formatted reports in PostScript
 
 =head1 VERSION
 
-This document describes version 0.12 of
-PostScript::Report, released May 4, 2013
-as part of PostScript-Report version 0.12.
+This document describes version 0.13 of
+PostScript::Report, released November 30, 2013
+as part of PostScript-Report version 0.13.
 
 =head1 SYNOPSIS
 
@@ -1225,7 +1225,7 @@ or through the web interface at
 L<< http://rt.cpan.org/Public/Bug/Report.html?Queue=PostScript-Report >>.
 
 You can follow or contribute to PostScript-Report's development at
-L<< http://github.com/madsen/postscript-report >>.
+L<< https://github.com/madsen/postscript-report >>.
 
 =head1 ACKNOWLEDGMENTS
 

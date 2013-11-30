@@ -46,6 +46,7 @@ my %WriteMakefileArgs = (
     'Carp' => '0',
     'File::Spec' => '0',
     'List::Util' => '0',
+    'Module::Runtime' => '0',
     'Moose' => '0.90',
     'Moose::Role' => '0',
     'MooseX::AttributeTree' => '0.02',

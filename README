@@ -1,4 +1,4 @@
-PostScript::Report version 0.12, released May 4, 2013
+PostScript::Report version 0.13, released November 30, 2013
 
 
 PostScript::Report helps you generate nicely formatted reports using
@@ -26,6 +26,7 @@ DEPENDENCIES
   Carp                    
   File::Spec              
   List::Util              
+  Module::Runtime         
   Moose                   0.90
   Moose::Role             
   MooseX::AttributeTree   0.02
@@ -39,17 +40,13 @@ DEPENDENCIES
 
 
 CHANGES
-    Here's what's new in version 0.12 of PostScript::Report:
+    Here's what's new in version 0.13 of PostScript::Report:
     (See the file "Changes" for the full revision history.)
 
-	- No functional changes; just updated metadata
-	- Add Moose & MooseX::Types to configure_requires.
-	  They're not actually required by Makefile.PL, but if they're
-	  not installed, it skips the version check introduced in
-	  version 0.11.  Since many CPAN testers don't install modules
-	  normally, but just build an @INC containing only the listed
-	  requirements, they always skipped the version check and
-	  continued to send reports for that Moose bug.
+	- Builder now uses Module::Runtime to load classes
+	- Fix type library to be compatible with upcoming Moose 2.1200
+	  (fixes RT#90697 & RT#90698)
+	- Localize $@ before eval
 
 
 

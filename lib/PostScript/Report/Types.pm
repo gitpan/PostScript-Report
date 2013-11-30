@@ -17,7 +17,7 @@ package PostScript::Report::Types;
 # ABSTRACT: type library for PostScript::Report
 #---------------------------------------------------------------------
 
-our $VERSION = '0.11';
+our $VERSION = '0.13';
 
 use Carp 'confess';
 
@@ -28,7 +28,7 @@ use MooseX::Types -declare => [qw(
 )];
 use MooseX::Types::Moose qw(ArrayRef Num Str);
 
-enum(BorderStyle, qw(0 1 T B L R TB LR TL TR BL BR TLR BLR TBL TBR));
+enum(BorderStyle, [qw(0 1 T B L R TB LR TL TR BL BR TLR BLR TBL TBR)]);
 
 subtype BorderStyleNC,
   as Str,
@@ -55,9 +55,9 @@ class_type FontObj,     { class => 'PostScript::Report::Font' };
 class_type FontMetrics, { class => 'PostScript::File::Metrics' };
 class_type Report,      { class => 'PostScript::Report' };
 
-enum(FooterPos, qw(bottom split top));
+enum(FooterPos, [qw(bottom split top)]);
 
-enum(HAlign, qw(center left right));
+enum(HAlign, [qw(center left right)]);
 
 subtype RptValue,
   as Str|role_type('PostScript::Report::Role::Value');
@@ -65,9 +65,9 @@ subtype RptValue,
 subtype Parent,
   as Container|Report;
 
-enum(SectionType, qw(page report));
+enum(SectionType, [qw(page report)]);
 
-enum(VAlign, qw(bottom top));
+enum(VAlign, [qw(bottom top)]);
 
 #---------------------------------------------------------------------
 subtype BWColor,
@@ -112,9 +112,9 @@ PostScript::Report::Types - type library for PostScript::Report
 
 =head1 VERSION
 
-This document describes version 0.11 of
-PostScript::Report::Types, released May 4, 2013
-as part of PostScript-Report version 0.12.
+This document describes version 0.13 of
+PostScript::Report::Types, released November 30, 2013
+as part of PostScript-Report version 0.13.
 
 =head1 DESCRIPTION
 
@@ -187,7 +187,7 @@ or through the web interface at
 L<< http://rt.cpan.org/Public/Bug/Report.html?Queue=PostScript-Report >>.
 
 You can follow or contribute to PostScript-Report's development at
-L<< http://github.com/madsen/postscript-report >>.
+L<< https://github.com/madsen/postscript-report >>.
 
 =head1 ACKNOWLEDGMENTS
 

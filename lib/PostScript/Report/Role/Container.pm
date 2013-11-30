@@ -103,8 +103,8 @@ PostScript::Report::Role::Container - A component that has components
 =head1 VERSION
 
 This document describes version 0.07 of
-PostScript::Report::Role::Container, released May 4, 2013
-as part of PostScript-Report version 0.12.
+PostScript::Report::Role::Container, released November 30, 2013
+as part of PostScript-Report version 0.13.
 
 =head1 DESCRIPTION
 
@@ -210,7 +210,7 @@ or through the web interface at
 L<< http://rt.cpan.org/Public/Bug/Report.html?Queue=PostScript-Report >>.
 
 You can follow or contribute to PostScript-Report's development at
-L<< http://github.com/madsen/postscript-report >>.
+L<< https://github.com/madsen/postscript-report >>.
 
 =head1 ACKNOWLEDGMENTS
 
